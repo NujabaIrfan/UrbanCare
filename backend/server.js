@@ -1,23 +1,30 @@
 import express from "express";
-import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+import receiptRoutes from "./routes/receiptRoutes.js";
+import Stripe from "stripe";
 
 dotenv.config();
+
+// ✅ Use environment variable instead of hardcoding
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch(err => console.log("❌ MongoDB connection error:", err));
+// Connect to MongoDB
+connectDB();
 
-// Simple test route
+// Routes
+app.use("/api/receipts", receiptRoutes);
+
+// Default route
 app.get("/", (req, res) => {
-  res.send("Backend is running...");
+  res.send("✅ Patient Receipt Backend is running...");
 });
 
 const PORT = process.env.PORT || 5000;
