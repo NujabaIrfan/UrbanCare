@@ -20,6 +20,7 @@ const Header = () => {
           <Link to="/payment" className="text-white text-sm hover:text-gray-200">Payment</Link>
           <a href="#" className="text-white text-sm hover:text-gray-200">Support</a>
           <a href="#" className="text-white text-sm hover:text-gray-200">About</a>
+          <Link to="/add-patient" className="text-white text-sm hover:text-gray-200">Patient Registration</Link>
         </nav>
       </div>
       <div className="flex items-center bg-white rounded-full px-4 py-2 gap-2">
