@@ -1,12 +1,19 @@
 const express=require("express");
 const mongoose=require("mongoose");
+const cors = require('cors');
 require("dotenv").config();
+
+const patientRoutes = require('./routes/patientRoutes');
 
 const app = express();
 
-app.use("/", (req, res, next)=>{
-    res.send("Test");
-})
+app.use(cors());
+app.use(express.json());
+
+app.use('/api/patients', patientRoutes);
+// app.use("/", (req, res, next)=>{
+//     res.send("Test");
+// })
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
