@@ -10,6 +10,9 @@ import PaymentInterface from './pages/paymentInterface'
 import AddPatient from './pages/PatientManagement/AddPatient';
 import QRScanner from './components/QRScanner';
 import DisplayPatients from './pages/PatientManagement/DisplayPatients';
+import MedicalRecordsList from './pages/MedicalRecords/MedicalRecordsList';
+import AddMedicalRecord from './pages/MedicalRecords/AddMedicalRecord';
+import UpdateMedicalRecord from './pages/MedicalRecords/UpdateMedicalRecord';
 function App() {
   return (
     <Router>
@@ -23,6 +26,9 @@ function App() {
           <Route path="/add-patient" element={<AddPatient />} />
           <Route path="/qr-scanner" element={<QRScanner />} />
           <Route path="/display-patients" element={<DisplayPatients />} />
+          <Route path="/medical-records/:patientId" element={<MedicalRecordsList />} />
+          <Route path="/add-medical-record/:patientId" element={<AddMedicalRecord />} />
+          <Route path="/medical-records/update/:recordId" element={<UpdateMedicalRecord />} />
         </Routes>
         <Footer />
       </div>

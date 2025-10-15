@@ -91,9 +91,7 @@ function AddPatient() {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-6xl mx-auto">
-        <h4 className="font-bold mb-6 text-left">
-          <Link to="/qr-scanner">Scan QR Code</Link>
-        </h4>
+        
         <h4 className="font-bold mb-6 text-left">
           <Link to="/display-patients">Patients</Link>
         </h4>
