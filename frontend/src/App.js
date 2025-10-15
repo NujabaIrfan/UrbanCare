@@ -13,6 +13,7 @@ import DisplayPatients from './pages/PatientManagement/DisplayPatients';
 import MedicalRecordsList from './pages/MedicalRecords/MedicalRecordsList';
 import AddMedicalRecord from './pages/MedicalRecords/AddMedicalRecord';
 import UpdateMedicalRecord from './pages/MedicalRecords/UpdateMedicalRecord';
+import ResultPage from './pages/ResultPage';
 function App() {
   return (
     <Router>
@@ -29,6 +30,7 @@ function App() {
           <Route path="/medical-records/:patientId" element={<MedicalRecordsList />} />
           <Route path="/add-medical-record/:patientId" element={<AddMedicalRecord />} />
           <Route path="/medical-records/update/:recordId" element={<UpdateMedicalRecord />} />
+          <Route path="/results/:resultId" element={<ResultPage />}></Route>
         </Routes>
         <Footer />
       </div>
