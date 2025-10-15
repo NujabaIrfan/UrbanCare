@@ -72,7 +72,8 @@ function AddPatient() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this patient?")) return;
+    if (!window.confirm("Are you sure you want to delete this patient?"))
+      return;
 
     try {
       const response = await fetch(`http://localhost:5000/api/patients/${id}`, {
@@ -91,7 +92,10 @@ function AddPatient() {
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-6xl mx-auto">
         <h4 className="font-bold mb-6 text-left">
-          <Link to='/qr-scanner'>Scan QR Code</Link>
+          <Link to="/qr-scanner">Scan QR Code</Link>
+        </h4>
+        <h4 className="font-bold mb-6 text-left">
+          <Link to="/display-patients">Patients</Link>
         </h4>
         <h1 className="text-3xl font-bold mb-6 text-center">
           Patient Management
@@ -177,39 +181,52 @@ function AddPatient() {
           </form>
 
           {message && (
-
             <div className="{`mt-4 p-3 rounded ${message.includes('success') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}">
-                {message}
+              {message}
             </div>
           )}
         </div>
 
-          {/* patient list display */}
+        {/* patient list display */}
 
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-semibold mb-4">All Patients</h2>
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold mb-4">All Patients</h2>
 
-            {patients.length === 0 ? (
-                <p className="text-gray-500">No patients found</p>
-            ):(
-                <div className="grid gap-4">
-                    {patients.map((patient)=> (
-                        <div key={patient._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
-                            <div className="flex justify-between items-start">
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-semibold">{patient.name}</h3>
-                      <p className="text-sm text-gray-600">Patient ID: {patient.patientId}</p>
-                      <p className="text-sm text-gray-600">Age: {patient.age} | Gender: {patient.gender}</p>
-                      <p className="text-sm text-gray-600">Contact: {patient.contact}</p>
+          {patients.length === 0 ? (
+            <p className="text-gray-500">No patients found</p>
+          ) : (
+            <div className="grid gap-4">
+              {patients.map((patient) => (
+                <div
+                  key={patient._id}
+                  className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold">{patient.name}</h3>
+                      <p className="text-sm text-gray-600">
+                        Patient ID: {patient.patientId}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Age: {patient.age} | Gender: {patient.gender}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Contact: {patient.contact}
+                      </p>
 
                       {patient.medicalHistory && (
-                        <p className="text-sm text-gray-600 mt-1">History: {patient.medicalHistory}</p>
-                      
+                        <p className="text-sm text-gray-600 mt-1">
+                          History: {patient.medicalHistory}
+                        </p>
                       )}
-                                </div>
-                                <div className="flex gap-2">
+                    </div>
+                    <div className="flex gap-2">
                       {patient.qrCode && (
-                        <img src={patient.qrCode} alt="QR Code" className="w-20 h-20" />
+                        <img
+                          src={patient.qrCode}
+                          alt="QR Code"
+                          className="w-20 h-20"
+                        />
                       )}
                       <button
                         onClick={() => handleDelete(patient._id)}
@@ -218,17 +235,12 @@ function AddPatient() {
                         Delete
                       </button>
                     </div>
-
-                            </div>
-                        </div>
-                    ))}
-                    
-
+                  </div>
                 </div>
-            )}
-
-          </div>
-
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
