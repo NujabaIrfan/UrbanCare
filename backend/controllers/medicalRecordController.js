@@ -1,5 +1,5 @@
-const MedicalRecordModel = require('../models/MedicalRecordModel');
-const PatientModel = require('../models/PatientModel');
+import MedicalRecordModel from '../models/MedicalRecordModel.js';
+import PatientModel from '../models/PatientModel.js';
 
 // Get all medical records
 const getAllMedicalRecords = async (req, res) => {
@@ -110,7 +110,7 @@ const deleteMedicalRecord = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   getAllMedicalRecords,
   getPatientMedicalRecords,
   getMedicalRecordById,
