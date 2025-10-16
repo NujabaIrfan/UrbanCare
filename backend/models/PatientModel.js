@@ -31,6 +31,9 @@ const patientSchema = new mongoose.Schema({
     qrCode: {
         type: String   //store base64 image
     },
+    email: {
+        type: String
+    }
 
 }, {
     timestamps:true    //createdAt, updatedAt automatically
