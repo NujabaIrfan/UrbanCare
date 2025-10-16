@@ -13,6 +13,8 @@ import DisplayPatients from './pages/PatientManagement/DisplayPatients';
 import MedicalRecordsList from './pages/MedicalRecords/MedicalRecordsList';
 import AddMedicalRecord from './pages/MedicalRecords/AddMedicalRecord';
 import UpdateMedicalRecord from './pages/MedicalRecords/UpdateMedicalRecord';
+import ResultPage from './pages/ResultPage';
+import CreateResults from './pages/CreateResults';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -42,6 +44,8 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/adminProfile" element={<AdminProfile />} />
             <Route path="/userManage" element={<UserManage />} />
+            <Route path="/results/create" element={<CreateResults />} />
+            <Route path="/results/:resultId" element={<ResultPage />} />
             <Route path="/doctorRegister" element={<DoctorRegistration/>}/>
           </Route>
 
