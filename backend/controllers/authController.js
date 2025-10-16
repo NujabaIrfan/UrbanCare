@@ -210,7 +210,8 @@ export const login = async (req, res) => {
             });
         }
 
-        if (!user.isVerified) {
+        // Only check verification for non-doctor users
+        if (user.role !== 'doctor' && !user.isVerified) {
             return res.status(403).json({
                 success: false,
                 message: 'Account not verified. Please verify your email first.'
@@ -235,6 +236,7 @@ export const login = async (req, res) => {
                 email: user.email,
                 contactNumber: user.contactNumber,
                 address: user.address,
+                isVerified: user.isVerified, // Include verification status in response
                 ...(user.role === 'doctor' && {
                     specialization: user.specialization,
                     qualification: user.qualification,

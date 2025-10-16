@@ -64,7 +64,7 @@ function UserManage() {
                         </svg>
                     </div>
                     <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-400 mb-2">
-                        Patient Management
+                        User Management
                     </h2>
                     <p className="text-blue-100 text-lg">Manage all patient accounts and information</p>
                 </div>
