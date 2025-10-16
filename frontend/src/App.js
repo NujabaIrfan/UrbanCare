@@ -26,41 +26,29 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/payment" element={<PaymentPage />} />
-          <Route path="/admin-payment" element={<AdminPayment />} />
-          <Route path="/payment-interface" element={<PaymentInterface />} />
-          <Route path="/add-patient" element={<AddPatient />} />
-          <Route path="/qr-scanner" element={<QRScanner />} />
-          <Route path="/display-patients" element={<DisplayPatients />} />
-          <Route path="/medical-records/:patientId" element={<MedicalRecordsList />} />
-          <Route path="/add-medical-record/:patientId" element={<AddMedicalRecord />} />
-          <Route path="/medical-records/update/:recordId" element={<UpdateMedicalRecord />} />
         <Routes>
           {/* Routes with Header and Footer */}
-          <Route path="/*" element={
-            <>
-              <Header />
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/payment" element={<PaymentPage />} />
-                <Route path="/admin-payment" element={<AdminPayment />} />
-                <Route path="/payment-interface" element={<PaymentInterface />} />
-                <Route path="/profile" element={<Profile/>}/>
-                <Route path="/adminProfile" element={<AdminProfile/>}/>
-                <Route path='/userManage' element={<UserManage/>}/>
-              </Routes>
-              <Footer />
-            </>
-          } />
-          
-          {/* Route without Header and Footer */}
+          <Route element={<><Header /><Outlet /><Footer /></>}>
+            <Route path="/" element={<Home />} />
+            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/admin-payment" element={<AdminPayment />} />
+            <Route path="/payment-interface" element={<PaymentInterface />} />
+            <Route path="/add-patient" element={<AddPatient />} />
+            <Route path="/qr-scanner" element={<QRScanner />} />
+            <Route path="/display-patients" element={<DisplayPatients />} />
+            <Route path="/medical-records/:patientId" element={<MedicalRecordsList />} />
+            <Route path="/add-medical-record/:patientId" element={<AddMedicalRecord />} />
+            <Route path="/medical-records/update/:recordId" element={<UpdateMedicalRecord />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/adminProfile" element={<AdminProfile />} />
+            <Route path="/userManage" element={<UserManage />} />
+          </Route>
+
+          {/* Routes without Header and Footer */}
           <Route path="/login" element={<Login />} />
-          <Route path='/register' element={<Register/>}/>
-          <Route path='/forgot-password' element={<ForgotPassword/>}/>
-          <Route path='/verify-otp' element={<VerifyOTP/>}/>
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-otp" element={<VerifyOTP />} />
         </Routes>
       </div>
     </Router>

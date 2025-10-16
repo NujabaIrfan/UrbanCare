@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import Stripe from "stripe";
 
 import connectDB from "./config/db.js";
 import patientRoutes from "./routes/patientRoutes.js";
