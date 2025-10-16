@@ -72,7 +72,7 @@ const StripeCardForm = ({ billDetails, onSuccess, onError }) => {
         setProcessing(false);
       } else if (paymentIntent.status === 'succeeded') {
         // Step 3: Confirm payment on backend - matches your route
-        const confirmResponse = await fetch('http://localhost:5000/api/receipts/confirm-payment', {
+        const confirmResponse = await fetch('http://localhost:5000/api/payments/confirm-payment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

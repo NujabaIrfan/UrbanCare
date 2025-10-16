@@ -2,44 +2,35 @@ import { Newspaper, Trash } from "lucide-react";
 import Card from "../components/Card";
 import { useState } from "react";
 import LabResultCard from "../components/LabResultCard";
+import axios from "axios";
 
-const labResults = [
-  {
-    testType: "Blood Glucose (Fasting)",
-    status: "normal",
-    value: 92,
-    unit: "mg/dL",
-    recommendedRange: "70 – 100 mg/dL",
-    remarks: "Your fasting blood sugar level is within the healthy range."
-  },
-  {
-    testType: "Cholesterol",
-    status: "high",
-    value: 245,
-    unit: "mg/dL",
-    recommendedRange: "< 200 mg/dL",
-    remarks: "High cholesterol levels detected. Consider dietary adjustments."
-  },
-  {
-    testType: "Hemoglobin",
-    status: "low",
-    value: 11.2,
-    unit: "g/dL",
-    recommendedRange: "13.5 – 17.5 g/dL (male)",
-    remarks: "Slightly low hemoglobin; may indicate anemia or low iron intake."
-  },
-  {
-    testType: "Vitamin D",
-    status: "critical",
-    value: 18,
-    unit: "ng/mL",
-    recommendedRange: "30 – 100 ng/mL",
-    remarks: "Vitamin D deficiency. Sun exposure or supplements may help."
-  },
-]
+const resultBody = {
+  name: "",
+  result: "",
+  unit: "",
+  severity: "normal",
+  recommendedRange: "",
+  remarks: "",
+}
+
+const recommendationsBody = {
+  recommendation: "",
+  type: "",
+  priority: "low",
+  dueDate: new Date()
+}
 
 
-function TestResultForm({ }) {
+function TestResultForm({ index, data, setData }) {
+
+  const updateResultField = (name, value) => {
+    setData((prev) => {
+      const updatedResults = [...prev.results]
+      updatedResults[index] = { ...updatedResults[index], [name]: value }
+      return { ...prev, results: updatedResults }
+    })
+  }
+
   return (
     <Card className="my-5 relative">
       <div className="flex justify-end">
@@ -60,6 +51,9 @@ function TestResultForm({ }) {
             id="testName"
             placeholder="Enter test name"
             className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={data.results[index].name}
+            onChange={(evt) => updateResultField("name", evt.target.value)}
+            required
           />
         </div>
 
@@ -73,6 +67,9 @@ function TestResultForm({ }) {
               id="value"
               placeholder="Enter result"
               className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={data.results[index].result}
+              onChange={(evt) => updateResultField("result", evt.target.value)}
+              required
             />
           </div>
           <div>
@@ -82,13 +79,16 @@ function TestResultForm({ }) {
             <select
               id="unit"
               className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={data.results[index].unit}
+              onChange={(evt) => updateResultField("unit", evt.target.value)}
+              required
             >
-              <option>ng/dL</option>
-              <option>mg/dL</option>
-              <option>g/dL</option>
-              <option>mmol/L</option>
-              <option>μIU/mL</option>
-              <option>x10⁶/μL</option>
+              <option value="ng/dL">ng/dL</option>
+              <option value="mg/dL">mg/dL</option>
+              <option value="g/dL">g/dL</option>
+              <option value="mmol/L">mmol/L</option>
+              <option value="μIU/mL">μIU/mL</option>
+              <option value="x10⁶/μL">x10⁶/μL</option>
             </select>
           </div>
           <div>
@@ -98,11 +98,14 @@ function TestResultForm({ }) {
             <select
               id="severity"
               className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={data.results[index].severity}
+              onChange={(evt) => updateResultField("severity", evt.target.value)}
+              required
             >
-              <option>normal</option>
-              <option>high</option>
-              <option>low</option>
-              <option>critical</option>
+              <option value="normal">normal</option>
+              <option value="low">low</option>
+              <option value="high">high</option>
+              <option value="critical">critical</option>
             </select>
           </div>
         </div>
@@ -116,6 +119,9 @@ function TestResultForm({ }) {
             id="range"
             placeholder="e.g. 70–110 mg/dL"
             className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={data.results[index].recommendedRange}
+            onChange={(evt) => updateResultField("recommendedRange", evt.target.value)}
+            required
           />
         </div>
 
@@ -128,6 +134,9 @@ function TestResultForm({ }) {
             placeholder="Add any additional notes or findings"
             rows="3"
             className="w-full border border-gray-300 rounded-xl px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={data.results[index].remarks}
+            onChange={(evt) => updateResultField("remarks", evt.target.value)}
+            required
           ></textarea>
         </div>
 
@@ -136,7 +145,17 @@ function TestResultForm({ }) {
   )
 }
 
-function RecommendationForm({ }) {
+function RecommendationForm({ index, data, setData }) {
+
+  const updateRecommendationField = (name, value) => {
+    setData((prev) => {
+      const updatedRecommendations = [...prev.recommendations]
+      updatedRecommendations[index] = { ...updatedRecommendations[index], [name]: value }
+      return { ...prev, recommendations: updatedRecommendations }
+    })
+  }
+
+
   return (
     <Card className="mt-5">
       <div className="flex justify-end">
@@ -157,6 +176,9 @@ function RecommendationForm({ }) {
             id="recommendation"
             placeholder="Enter recommendation"
             className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={data.recommendations[index].recommendation}
+            onChange={(evt) => updateRecommendationField("recommendation", evt.target.value)}
+            required
           />
         </div>
 
@@ -167,10 +189,14 @@ function RecommendationForm({ }) {
           <select
             id="type"
             className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={data.recommendations[index].type}
+            onChange={(evt) => updateRecommendationField("type", evt.target.value)}
+            required
           >
-            <option>Medication</option>
-            <option>Follow-up</option>
-            <option>Lifestyle</option>
+            <option value="">Select one</option>
+            <option value="medication">Medication</option>
+            <option value="follow-up">Follow-up</option>
+            <option value="lifestyle">Lifestyle</option>
           </select>
         </div>
 
@@ -181,11 +207,14 @@ function RecommendationForm({ }) {
           <select
             id="priority"
             className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={data.recommendations[index].priority}
+            onChange={(evt) => updateRecommendationField("priority", evt.target.value)}
+            required
           >
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
-            <option>Urgent</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
           </select>
         </div>
 
@@ -197,6 +226,9 @@ function RecommendationForm({ }) {
             type="date"
             id="dueDate"
             className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={data.recommendations[index].dueDate}
+            onChange={(evt) => updateRecommendationField("dueDate", evt.target.value)}
+            required
           />
         </div>
       </div>
@@ -207,8 +239,27 @@ function RecommendationForm({ }) {
 export default function CreateResults({ }) {
 
   const [step, setStep] = useState(1)
-  const [testResults, setTestResults] = useState([{}])
-  const [recommendations, setRecommendations] = useState([{}])
+  const [data, setData] = useState({
+    overallRemarks: "",
+    nextAppointment: new Date(),
+    results: [resultBody],
+    recommendations: [recommendationsBody],
+    patient: "random",
+    doctor: "random"
+  })
+
+  const submit = async (evt) => {
+    const form = evt.target;
+    if (!form.checkValidity()) {
+      return
+    }
+
+    evt.preventDefault()
+    console.log(data)
+    const response = await axios.post(`http://localhost:5000/api/reports/`, data)
+    console.log(response)
+  }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 p-6 relative overflow-hidden">
@@ -244,19 +295,28 @@ export default function CreateResults({ }) {
         {step === 1 && (
           <>
             <h3 className="text-2xl">Lab test results</h3>
-            {testResults.map((result, index) => <TestResultForm key={index} />)}
+            {data.results.map((result, index) => <TestResultForm
+              key={index}
+              index={index}
+              data={data}
+              setData={setData}
+              {...result}
+            />)}
             <div className="flex justify-end gap-3 mt-6">
               <button
                 type="button"
                 className="px-4 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-300 transition-colors duration-300"
-                onClick={() => setTestResults([...testResults, {}])}
+                onClick={() => setData(originalData => ({
+                  ...originalData,
+                  results: [...originalData.results, resultBody]
+                }))}
               >
                 Add another result
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300"
-                onClick={() => setStep(value => value + 1)}
+                onClick={() => setStep((value) => value + 1)}
               >
                 Proceed
               </button>
@@ -276,6 +336,9 @@ export default function CreateResults({ }) {
                     placeholder="Summarize the patient's overall condition and findings"
                     rows="3"
                     className="w-full border border-gray-300 rounded-xl px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={data.overallRemarks}
+                    onChange={(evt) => setData(value => ({ ...value, overallRemarks: evt.target.value }))}
+                    required
                   ></textarea>
                 </div>
 
@@ -287,32 +350,52 @@ export default function CreateResults({ }) {
                     type="datetime-local"
                     id="nextAppointment"
                     className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={data.nextAppointment}
+                    onChange={(evt) => setData(value => ({ ...value, nextAppointment: evt.target.value }))}
+                    required
                   />
                 </div>
               </div>
               <hr className="my-5" />
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Recommendations & Next Steps</h3>
-              {recommendations.map((recommendation, index) => <RecommendationForm key={index} {...recommendation} />)}
+              {data.recommendations.map((recommendation, index) => <RecommendationForm
+                key={index}
+                index={index}
+                data={data}
+                setData={setData}
+                {...recommendation}
+              />)}
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   type="button"
                   className="px-4 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-300 transition-colors duration-300"
-                  onClick={() => setRecommendations([...recommendations, {}])}
+                  onClick={() => setData((originalData) => ({
+                    ...originalData,
+                    recommendations: [...originalData.recommendations, recommendationsBody]
+                  }))}
                 >
                   Add another result
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300"
-                  onClick={() => setStep(value => value + 1)}
+                  onClick={submit}
                 >
-                  Proceed
+                  Submit
                 </button>
               </div>
             </Card>
             <div>
               <div>
-                {labResults.map((result, index) => <LabResultCard key={index} {...result} />)}
+                {data.results.map((result, index) => <LabResultCard
+                  key={index}
+                  testType={result.name}
+                  value={result.result}
+                  unit={result.unit}
+                  recommendedRange={result.recommendedRange}
+                  status={result.severity}
+                  remarks={result.remarks}
+                />)}
               </div>
             </div>
           </div>

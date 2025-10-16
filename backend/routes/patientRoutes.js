@@ -8,7 +8,7 @@ const router = express.Router();
 // ➕ Add new patient
 router.post("/", async (req, res) => {
   try {
-    const { name, age, gender, contact, medicalHistory } = req.body;
+    const { name, age, gender, contact, medicalHistory, email } = req.body;
 
     // Generate unique patient ID
     const patientId = `PAT-${uuidv4().slice(0, 8).toUpperCase()}`;
@@ -24,6 +24,7 @@ router.post("/", async (req, res) => {
       contact,
       medicalHistory,
       qrCode: qrCodeData,
+      email
     });
 
     await patient.save();
