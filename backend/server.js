@@ -6,16 +6,18 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import patientRoutes from "./routes/patientRoutes.js";
 import medicalRecordRoutes from "./routes/medicalRecordRoutes.js";
-import receiptRoutes from "./routes/receiptRoutes.js";
-import Stripe from "stripe";
+import receiptRoutes from "./routes/payment/receiptRoutes.js";
+import paymentRoutes from "./routes/payment/paymentRoutes.js";
+import governmentRoutes from "./routes/payment/governmentRoutes.js";
+import insuranceRoutes from "./routes/payment/insuranceRoutes.js";
+import adminRoutes from "./routes/payment/adminRoutes.js";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
 
 dotenv.config();
 
-// Initialize Stripe using secret key from environment variable
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 const app = express();
 
 // ✅ Enhanced CORS configuration
@@ -38,6 +40,10 @@ connectDB()
 app.use("/api/patients", patientRoutes);
 app.use("/api/medical-records", medicalRecordRoutes);
 app.use("/api/receipts", receiptRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/government", governmentRoutes);
+app.use("/api/insurance", insuranceRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", userRoutes);
 
