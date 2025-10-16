@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet  } from 'react-router-dom';
 import Header from './components/header';
 import Footer from './components/footer';
 import PaymentPage from '../src/pages/payment';
@@ -13,7 +13,6 @@ import DisplayPatients from './pages/PatientManagement/DisplayPatients';
 import MedicalRecordsList from './pages/MedicalRecords/MedicalRecordsList';
 import AddMedicalRecord from './pages/MedicalRecords/AddMedicalRecord';
 import UpdateMedicalRecord from './pages/MedicalRecords/UpdateMedicalRecord';
-import PaymentInterface from './pages/paymentInterface';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';

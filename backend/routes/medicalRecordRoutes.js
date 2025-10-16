@@ -1,13 +1,13 @@
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const {
+import {
   getAllMedicalRecords,
   getPatientMedicalRecords,
   getMedicalRecordById,
   createMedicalRecord,
   updateMedicalRecord,
   deleteMedicalRecord
-} = require('../controllers/medicalRecordController');
+} from '../controllers/medicalRecordController.js';
 
 // Get all medical records (add this BEFORE the /:id route)
 router.get('/', getAllMedicalRecords);
@@ -27,5 +27,4 @@ router.put('/:id', updateMedicalRecord);
 // Delete a medical record
 router.delete('/:id', deleteMedicalRecord);
 
-module.exports = router;
-
+export default router;
