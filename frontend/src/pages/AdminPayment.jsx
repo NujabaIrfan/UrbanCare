@@ -18,7 +18,9 @@ import {
   Clock,
   AlertCircle,
   Download,
-  Eye
+  Eye,
+  Lock,
+  CreditCard as PaymentIcon
 } from "lucide-react";
 
 function AdminPayment() {
@@ -31,6 +33,8 @@ function AdminPayment() {
   const [insuranceClaims, setInsuranceClaims] = useState([]);
   const [governmentFunding, setGovernmentFunding] = useState([]);
   const [showPaymentDetails, setShowPaymentDetails] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedReceiptForPayment, setSelectedReceiptForPayment] = useState(null);
 
   // 🟣 Fetch all data when component loads
   useEffect(() => {
@@ -41,9 +45,10 @@ function AdminPayment() {
     try {
       const [receiptsRes, transactionsRes, claimsRes, fundingRes] = await Promise.all([
         axios.get("http://localhost:5000/api/receipts"),
-        axios.get("http://localhost:5000/api/receipts/admin/transactions"),
-        axios.get("http://localhost:5000/api/receipts/admin/insurance-claims"),
-        axios.get("http://localhost:5000/api/receipts/admin/government-funding")
+        // UPDATED ENDPOINTS
+        axios.get("http://localhost:5000/api/admin/transactions"),
+        axios.get("http://localhost:5000/api/admin/insurance-claims"),
+        axios.get("http://localhost:5000/api/admin/government-funding")
       ]);
       
       setReceipts(receiptsRes.data);
@@ -68,8 +73,13 @@ function AdminPayment() {
     }
   };
 
-  // 🔵 Edit receipt
+  // 🔵 Edit receipt - Only allow if not paid
   const handleEditReceipt = async (updatedReceipt) => {
+    if (updatedReceipt.status === "Paid") {
+      alert("Cannot edit a paid receipt. Please change the status to 'Pending' first.");
+      return;
+    }
+
     try {
       const res = await axios.put(`http://localhost:5000/api/receipts/${editingReceipt._id}`, updatedReceipt);
       setReceipts(receipts.map((r) => (r._id === editingReceipt._id ? res.data : r)));
@@ -82,8 +92,15 @@ function AdminPayment() {
     }
   };
 
-  // 🔴 Delete receipt
+  // 🔴 Delete receipt - Only allow if not paid
   const handleDeleteReceipt = async (id) => {
+    const receipt = receipts.find(r => r._id === id);
+    
+    if (receipt?.status === "Paid") {
+      alert("Cannot delete a paid receipt. Please change the status to 'Pending' first.");
+      return;
+    }
+
     if (window.confirm("Are you sure you want to delete this receipt?")) {
       try {
         await axios.delete(`http://localhost:5000/api/receipts/${id}`);
@@ -101,6 +118,8 @@ function AdminPayment() {
     try {
       await axios.put(`http://localhost:5000/api/receipts/${receiptId}`, { status });
       fetchAllData(); // Refresh all data
+      setShowPaymentModal(false);
+      setSelectedReceiptForPayment(null);
     } catch (err) {
       console.error("Error updating status:", err);
       alert("Failed to update status.");
@@ -110,9 +129,10 @@ function AdminPayment() {
   // Update claim/funding status
   const updateClaimStatus = async (claimId, status, type = 'insurance') => {
     try {
+      // UPDATED ENDPOINTS
       const endpoint = type === 'insurance' 
-        ? `http://localhost:5000/api/receipts/insurance-claims/${claimId}`
-        : `http://localhost:5000/api/receipts/government-funding/${claimId}`;
+        ? `http://localhost:5000/api/insurance/insurance-claims/${claimId}`
+        : `http://localhost:5000/api/government/government-funding/${claimId}`;
       
       await axios.put(endpoint, { status });
       fetchAllData(); // Refresh all data
@@ -123,8 +143,17 @@ function AdminPayment() {
   };
 
   const openEditModal = (receipt) => {
+    if (receipt.status === "Paid") {
+      alert("Cannot edit a paid receipt. Please change the status to 'Pending' first.");
+      return;
+    }
     setEditingReceipt(receipt);
     setShowModal(true);
+  };
+
+  const openPaymentModal = (receipt) => {
+    setSelectedReceiptForPayment(receipt);
+    setShowPaymentModal(true);
   };
 
   const getStatusBadge = (status) => {
@@ -325,70 +354,98 @@ function AdminPayment() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredReceipts.map((r) => (
-                    <tr key={r._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-4">
-                        <div className="flex flex-col">
-                          <span className="font-mono text-sm font-medium text-emerald-600">{r.receiptNo}</span>
-                          <span className="text-xs text-gray-500">{new Date(r.createdAt).toLocaleDateString()}</span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex flex-col">
-                          <span className="font-medium text-gray-800">{r.patientName}</span>
-                          <span className="text-sm text-gray-600">{r.patientId}</span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex flex-wrap gap-1 max-w-xs">
-                          {r.services?.slice(0, 2).map((s, i) => (
-                            <span
-                              key={i}
-                              className="bg-gray-100 text-gray-700 px-2 py-1 rounded-md text-xs"
+                  {filteredReceipts.map((r) => {
+                    const isPaid = r.status === "Paid";
+                    return (
+                      <tr key={r._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                        <td className="py-4 px-4">
+                          <div className="flex flex-col">
+                            <span className="font-mono text-sm font-medium text-emerald-600">{r.receiptNo}</span>
+                            <span className="text-xs text-gray-500">{new Date(r.createdAt).toLocaleDateString()}</span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex flex-col">
+                            <span className="font-medium text-gray-800">{r.patientName}</span>
+                            <span className="text-sm text-gray-600">{r.patientId}</span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex flex-wrap gap-1 max-w-xs">
+                            {r.services?.slice(0, 2).map((s, i) => (
+                              <span
+                                key={i}
+                                className="bg-gray-100 text-gray-700 px-2 py-1 rounded-md text-xs"
+                              >
+                                {s.name}
+                              </span>
+                            ))}
+                            {r.services?.length > 2 && (
+                              <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-md text-xs">
+                                +{r.services.length - 2} more
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-right">
+                          <span className="font-bold text-gray-800">Rs {r.total?.toLocaleString() || 0}</span>
+                        </td>
+                        <td className="py-4 px-4 text-center">
+                          {getStatusBadge(r.status || 'Pending')}
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              onClick={() => setShowPaymentDetails(r)}
+                              className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded-lg transition-all"
+                              title="View payment details"
                             >
-                              {s.name}
-                            </span>
-                          ))}
-                          {r.services?.length > 2 && (
-                            <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-md text-xs">
-                              +{r.services.length - 2} more
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-4 px-4 text-right">
-                        <span className="font-bold text-gray-800">Rs {r.total?.toLocaleString() || 0}</span>
-                      </td>
-                      <td className="py-4 px-4 text-center">
-                        {getStatusBadge(r.status || 'Pending')}
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() => setShowPaymentDetails(r)}
-                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded-lg transition-all"
-                            title="View payment details"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => openEditModal(r)}
-                            className="text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 p-2 rounded-lg transition-all"
-                            title="Edit receipt"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteReceipt(r._id)}
-                            className="text-red-600 hover:text-red-800 hover:bg-red-50 p-2 rounded-lg transition-all"
-                            title="Delete receipt"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            
+                            {/* Edit Button - Disabled when paid */}
+                            <button
+                              onClick={() => openEditModal(r)}
+                              disabled={isPaid}
+                              className={`p-2 rounded-lg transition-all ${
+                                isPaid
+                                  ? "text-gray-400 cursor-not-allowed bg-gray-100"
+                                  : "text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50"
+                              }`}
+                              title={isPaid ? "Cannot edit paid receipts" : "Edit receipt"}
+                            >
+                              {isPaid ? <Lock className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
+                            </button>
+                            
+                            {/* Mark Payment Button - Only show for non-paid receipts */}
+                            {!isPaid && (
+                              <button
+                                onClick={() => openPaymentModal(r)}
+                                className="text-green-600 hover:text-green-800 hover:bg-green-50 p-2 rounded-lg transition-all"
+                                title="Mark as paid"
+                              >
+                                <PaymentIcon className="w-4 h-4" />
+                              </button>
+                            )}
+                            
+                            {/* Delete Button - Disabled when paid */}
+                            <button
+                              onClick={() => handleDeleteReceipt(r._id)}
+                              disabled={isPaid}
+                              className={`p-2 rounded-lg transition-all ${
+                                isPaid
+                                  ? "text-gray-400 cursor-not-allowed bg-gray-100"
+                                  : "text-red-600 hover:text-red-800 hover:bg-red-50"
+                              }`}
+                              title={isPaid ? "Cannot delete paid receipts" : "Delete receipt"}
+                            >
+                              {isPaid ? <Lock className="w-4 h-4" /> : <Trash2 className="w-4 h-4" />}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -404,15 +461,31 @@ function AdminPayment() {
               <h2 className="text-2xl font-bold text-gray-800">
                 {editingReceipt ? "Edit Receipt" : "Create New Receipt"}
               </h2>
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setEditingReceipt(null);
-                }}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
+              <div className="flex items-center gap-3">
+                {/* Mark Payment Button in Edit Modal */}
+                {editingReceipt && editingReceipt.status !== "Paid" && (
+                  <button
+                    onClick={() => {
+                      setShowModal(false);
+                      openPaymentModal(editingReceipt);
+                    }}
+                    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all"
+                    title="Mark as paid"
+                  >
+                    <PaymentIcon className="w-4 h-4" />
+                    Mark Payment
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setEditingReceipt(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
             </div>
             <div className="p-6">
               <ReceiptForm
@@ -422,7 +495,102 @@ function AdminPayment() {
                   setEditingReceipt(null);
                 }}
                 initialData={editingReceipt}
+                isEditing={!!editingReceipt}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Marking Modal */}
+      {showPaymentModal && selectedReceiptForPayment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+              <h2 className="text-xl font-bold text-gray-800">Mark Payment</h2>
+              <button
+                onClick={() => {
+                  setShowPaymentModal(false);
+                  setSelectedReceiptForPayment(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <PaymentIcon className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800">Confirm Payment</h3>
+                  <p className="text-gray-600 mt-2">
+                    Are you sure you want to mark this receipt as paid?
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="font-medium text-gray-700">Receipt No:</span>
+                      <p className="text-gray-900">{selectedReceiptForPayment.receiptNo}</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-700">Patient:</span>
+                      <p className="text-gray-900">{selectedReceiptForPayment.patientName}</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-700">Amount:</span>
+                      <p className="text-gray-900 font-bold">Rs {selectedReceiptForPayment.total?.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-700">Current Status:</span>
+                      {getStatusBadge(selectedReceiptForPayment.status || 'Pending')}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={() => updatePaymentStatus(selectedReceiptForPayment._id, 'Paid')}
+                    className="flex-1 bg-green-600 text-white py-3 px-4 rounded-xl hover:bg-green-700 transition-colors font-semibold flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle className="w-5 h-5" />
+                    Mark as Paid
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowPaymentModal(false);
+                      setSelectedReceiptForPayment(null);
+                    }}
+                    className="flex-1 bg-gray-500 text-white py-3 px-4 rounded-xl hover:bg-gray-600 transition-colors font-semibold"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                {/* Additional Payment Options */}
+                <div className="border-t pt-4 mt-4">
+                  <p className="text-sm text-gray-600 mb-3">Or mark as:</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => updatePaymentStatus(selectedReceiptForPayment._id, 'Claim Pending')}
+                      className="bg-blue-100 text-blue-700 py-2 px-3 rounded-lg hover:bg-blue-200 transition-colors text-sm flex items-center justify-center gap-1"
+                    >
+                      <Shield className="w-4 h-4" />
+                      Insurance Claim
+                    </button>
+                    <button
+                      onClick={() => updatePaymentStatus(selectedReceiptForPayment._id, 'Funding Pending')}
+                      className="bg-purple-100 text-purple-700 py-2 px-3 rounded-lg hover:bg-purple-200 transition-colors text-sm flex items-center justify-center gap-1"
+                    >
+                      <Building2 className="w-4 h-4" />
+                      Gov Funding
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
