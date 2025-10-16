@@ -2,81 +2,9 @@ import { AlertTriangle, Calendar, ChevronLeftCircle, Download, MapPin, Newspaper
 import Card from "../components/Card";
 import LabResultCard from "../components/LabResultCard";
 import RecommendationCard from "../components/RecommendationCard";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../context/authContext";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-
-const labResults = [
-  {
-    testType: "Blood Glucose (Fasting)",
-    status: "normal",
-    value: 92,
-    unit: "mg/dL",
-    recommendedRange: "70 – 100 mg/dL",
-    remarks: "Your fasting blood sugar level is within the healthy range."
-  },
-  {
-    testType: "Cholesterol",
-    status: "high",
-    value: 245,
-    unit: "mg/dL",
-    recommendedRange: "< 200 mg/dL",
-    remarks: "High cholesterol levels detected. Consider dietary adjustments."
-  },
-  {
-    testType: "Hemoglobin",
-    status: "low",
-    value: 11.2,
-    unit: "g/dL",
-    recommendedRange: "13.5 – 17.5 g/dL (male)",
-    remarks: "Slightly low hemoglobin; may indicate anemia or low iron intake."
-  },
-  {
-    testType: "Vitamin D",
-    status: "critical",
-    value: 18,
-    unit: "ng/mL",
-    recommendedRange: "30 – 100 ng/mL",
-    remarks: "Vitamin D deficiency. Sun exposure or supplements may help."
-  },
-]
-
-const recommendations = [
-  {
-    title: "Start Iron Supplementation",
-    description:
-      "Begin taking iron supplements (ferrous elemental iron) once daily with vitamin C to improve absorption. Take on an empty stomach if tolerated.",
-    priority: "high",
-    type: "medication",
-    dueDate: "Within 1 week",
-  },
-  {
-    title: "Thyroid Hormone Replacement Therapy",
-    description:
-      "Start levothyroxine 50mcg daily on an empty stomach, 30–60 minutes before breakfast. This helps manage hypothyroidism effectively.",
-    priority: "urgent",
-    type: "medication",
-    dueDate: "Immediate",
-  },
-  {
-    title: "Cholesterol Management Diet",
-    description:
-      "Adopt a heart-healthy diet low in saturated fats and cholesterol. Include fiber-rich foods and lean proteins.",
-    priority: "medium",
-    type: "lifestyle",
-    dueDate: "Within 2 weeks",
-  },
-  {
-    title: "Lab Re-check",
-    description:
-      "Schedule follow-up blood work in 6–8 weeks to monitor thyroid and hemoglobin levels after starting treatment.",
-    priority: "high",
-    type: "follow-up",
-    dueDate: "6–8 weeks",
-  },
-];
-
 
 export default function ResultPage({ }) {
 
@@ -102,7 +30,6 @@ export default function ResultPage({ }) {
     recommendation => recommendation.priority === "high" || recommendation.priority === "urgent"
   ).length : 0
 
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 p-6 relative overflow-hidden">
       <div className="flex gap-2 cursor-pointer">
@@ -110,7 +37,7 @@ export default function ResultPage({ }) {
         <div>Back</div>
       </div>
       {data ? (
-        <>
+        <div id="report-container">
           <Card className="mt-8">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
@@ -128,7 +55,9 @@ export default function ResultPage({ }) {
                   <Share2 size={15} />
                   <span>Share</span>
                 </button>
-                <button className="p-2 border border-gray-300 rounded-md flex gap-2 items-center hover:bg-gray-200 transition-colors duration-300">
+                <button
+                  onClick={window.print}
+                  className="p-2 border border-gray-300 rounded-md flex gap-2 items-center hover:bg-gray-200 transition-colors duration-300">
                   <Download size={15} />
                   <span>Download PDF</span>
                 </button>
@@ -229,12 +158,12 @@ export default function ResultPage({ }) {
               </Card>
             </div>
           </section>
-        </>
+        </div>
       ) : (
-      <>
-        <h3 className="m-auto text-3xl font-bold">Report not found</h3>
-        <SearchX size={100} className="m-auto my-10"/>
-      </>)}
+        <>
+          <h3 className="m-auto text-3xl font-bold">Report not found</h3>
+          <SearchX size={100} className="m-auto my-10" />
+        </>)}
     </div >
   )
 }
