@@ -88,6 +88,13 @@ function DisplayPatients() {
                       Medical Records
                     </button>
                     </Link>
+                    <Link to={`/results/create`} state={{ email: patient.email }} >
+                    <button
+                      className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 h-fit ml-3"
+                    >
+                      Add Report
+                    </button>
+                    </Link>
                   </td>
                 </tr>
               ))}

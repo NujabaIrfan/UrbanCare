@@ -1,8 +1,10 @@
 import { Newspaper, Trash } from "lucide-react";
 import Card from "../components/Card";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import LabResultCard from "../components/LabResultCard";
 import axios from "axios";
+import { AuthContext } from "../context/authContext";
+import { redirect, useLocation, useNavigate } from "react-router-dom";
 
 const resultBody = {
   name: "",
@@ -237,6 +239,9 @@ function RecommendationForm({ index, data, setData }) {
 }
 
 export default function CreateResults({ }) {
+  const { user } = useContext(AuthContext)
+  const { state } = useLocation()
+  const navigate = useNavigate()
 
   const [step, setStep] = useState(1)
   const [data, setData] = useState({
@@ -244,8 +249,8 @@ export default function CreateResults({ }) {
     nextAppointment: new Date(),
     results: [resultBody],
     recommendations: [recommendationsBody],
-    patient: "random",
-    doctor: "random"
+    patient: state.email,
+    doctor: ""
   })
 
   const submit = async (evt) => {
@@ -254,10 +259,22 @@ export default function CreateResults({ }) {
       return
     }
 
+    if (!user.email) return alert("You need to log in")
+
     evt.preventDefault()
-    console.log(data)
-    const response = await axios.post(`http://localhost:5000/api/reports/`, data)
-    console.log(response)
+    try {
+      const response = await axios.post("http://localhost:5000/api/reports", {
+        ...data,
+        doctor: user.email,
+      })
+
+      if (response.status === 201) {
+        navigate(`/results/${response.data.id}`)
+      }
+    } catch (error) {
+      console.error("Error creating report:", error)
+    }
+
   }
 
 
@@ -273,20 +290,15 @@ export default function CreateResults({ }) {
           </div>
           <div className="grid gap-2 md:flex md:gap-8 mt-5 [&>div]:grid [&>div]:grid-cols-2 [&>div]:w-full [&>div]:md:flex [&>div]:md:gap-2 [&>div]:md:w-auto [&>div]:justify-items-start">
             <div>
-              <b>Patient:</b>
-              <span>John Doe</span>
-            </div>
-            <div>
-              <b>Age:</b>
-              <span>30</span>
-            </div>
-            <div>
-              <b>Gender:</b>
-              <span>Male</span>
-            </div>
-            <div>
-              <b>Patient ID:</b>
-              <span>7 2004 2004</span>
+              <b>Patient email:</b>
+              <input
+                type="email"
+                id="email"
+                className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={data.patient}
+                onChange={(evt) => setData(value => ({ ...value, patient: evt.target.value }))}
+                required
+              />
             </div>
           </div>
         </div>
@@ -389,12 +401,7 @@ export default function CreateResults({ }) {
               <div>
                 {data.results.map((result, index) => <LabResultCard
                   key={index}
-                  testType={result.name}
-                  value={result.result}
-                  unit={result.unit}
-                  recommendedRange={result.recommendedRange}
-                  status={result.severity}
-                  remarks={result.remarks}
+                  {...result}
                 />)}
               </div>
             </div>

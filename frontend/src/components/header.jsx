@@ -13,6 +13,7 @@ const adminDropDownMenus = [
 
 const userDropDownMenus = [
   { label: "Profile", path: "/profile" },
+  { label: "Reports", path: "/results"}
 ];
 
 const doctorDropDownMenus = [];
