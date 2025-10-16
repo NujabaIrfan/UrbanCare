@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet  } from 'react-router-dom';
 import Header from './components/header';
 import Footer from './components/footer';
 import PaymentPage from '../src/pages/payment';
@@ -13,24 +13,42 @@ import DisplayPatients from './pages/PatientManagement/DisplayPatients';
 import MedicalRecordsList from './pages/MedicalRecords/MedicalRecordsList';
 import AddMedicalRecord from './pages/MedicalRecords/AddMedicalRecord';
 import UpdateMedicalRecord from './pages/MedicalRecords/UpdateMedicalRecord';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import VerifyOTP from './pages/VerifyOTP';
+import Profile from './pages/Profile';
+import AdminProfile from './pages/AdminProfile';
+import UserManage from './pages/UserManage';
+
 function App() {
   return (
     <Router>
       <div className="App">
-        <Header />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/payment" element={<PaymentPage />} />
-          <Route path="/admin-payment" element={<AdminPayment />} />
-          <Route path="/payment-interface" element={<PaymentInterface />} />
-          <Route path="/add-patient" element={<AddPatient />} />
-          <Route path="/qr-scanner" element={<QRScanner />} />
-          <Route path="/display-patients" element={<DisplayPatients />} />
-          <Route path="/medical-records/:patientId" element={<MedicalRecordsList />} />
-          <Route path="/add-medical-record/:patientId" element={<AddMedicalRecord />} />
-          <Route path="/medical-records/update/:recordId" element={<UpdateMedicalRecord />} />
+          {/* Routes with Header and Footer */}
+          <Route element={<><Header /><Outlet /><Footer /></>}>
+            <Route path="/" element={<Home />} />
+            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/admin-payment" element={<AdminPayment />} />
+            <Route path="/payment-interface" element={<PaymentInterface />} />
+            <Route path="/add-patient" element={<AddPatient />} />
+            <Route path="/qr-scanner" element={<QRScanner />} />
+            <Route path="/display-patients" element={<DisplayPatients />} />
+            <Route path="/medical-records/:patientId" element={<MedicalRecordsList />} />
+            <Route path="/add-medical-record/:patientId" element={<AddMedicalRecord />} />
+            <Route path="/medical-records/update/:recordId" element={<UpdateMedicalRecord />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/adminProfile" element={<AdminProfile />} />
+            <Route path="/userManage" element={<UserManage />} />
+          </Route>
+
+          {/* Routes without Header and Footer */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-otp" element={<VerifyOTP />} />
         </Routes>
-        <Footer />
       </div>
     </Router>
   );
