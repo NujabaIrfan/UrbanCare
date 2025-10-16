@@ -6,19 +6,43 @@ import Footer from './components/footer';
 import PaymentPage from '../src/pages/payment';
 import Home from '../src/pages/home';
 import AdminPayment from './pages/AdminPayment';
-import PaymentInterface from './pages/paymentInterface'
+import PaymentInterface from './pages/paymentInterface';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import VerifyOTP from './pages/VerifyOTP';
+import Profile from './pages/Profile';
+import AdminProfile from './pages/AdminProfile';
+import UserManage from './pages/UserManage';
+
 function App() {
   return (
     <Router>
       <div className="App">
-        <Header />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/payment" element={<PaymentPage />} />
-          <Route path="/admin-payment" element={<AdminPayment />} />
-          <Route path="/payment-interface" element={<PaymentInterface />} />
+          {/* Routes with Header and Footer */}
+          <Route path="/*" element={
+            <>
+              <Header />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/payment" element={<PaymentPage />} />
+                <Route path="/admin-payment" element={<AdminPayment />} />
+                <Route path="/payment-interface" element={<PaymentInterface />} />
+                <Route path="/profile" element={<Profile/>}/>
+                <Route path="/adminProfile" element={<AdminProfile/>}/>
+                <Route path='/userManage' element={<UserManage/>}/>
+              </Routes>
+              <Footer />
+            </>
+          } />
+          
+          {/* Route without Header and Footer */}
+          <Route path="/login" element={<Login />} />
+          <Route path='/register' element={<Register/>}/>
+          <Route path='/forgot-password' element={<ForgotPassword/>}/>
+          <Route path='/verify-otp' element={<VerifyOTP/>}/>
         </Routes>
-        <Footer />
       </div>
     </Router>
   );

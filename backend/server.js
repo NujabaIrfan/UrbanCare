@@ -4,23 +4,33 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import receiptRoutes from "./routes/receiptRoutes.js";
 import Stripe from "stripe";
+import cookieParser from "cookie-parser";
+import authRoutes from "./routes/authRoute.js";
+import userRoutes from "./routes/userRoute.js";
 
 dotenv.config();
 
-// ✅ Use environment variable instead of hardcoding
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 const app = express();
 
-// Middleware
-app.use(cors());
+// ✅ Enhanced CORS configuration
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
 app.use(express.json());
+app.use(cookieParser()); // Make sure this is included
 
 // Connect to MongoDB
 connectDB();
 
 // Routes
 app.use("/api/receipts", receiptRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/profile", userRoutes);
 
 // Default route
 app.get("/", (req, res) => {
