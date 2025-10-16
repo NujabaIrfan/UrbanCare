@@ -16,7 +16,6 @@
       "**/tests/**/*.test.js"
     ],
     "transform": {}
-    
   },
   "keywords": [],
   "author": "",
