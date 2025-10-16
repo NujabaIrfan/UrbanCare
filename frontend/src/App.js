@@ -23,6 +23,7 @@ import Profile from './pages/Profile';
 import AdminProfile from './pages/AdminProfile';
 import UserManage from './pages/UserManage';
 import DoctorRegistration from './pages/DoctorRegistration';
+import ResultsPage from './pages/ResultsPage';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/adminProfile" element={<AdminProfile />} />
             <Route path="/userManage" element={<UserManage />} />
+            <Route path="/results/" element={<ResultsPage />} />
             <Route path="/results/create" element={<CreateResults />} />
             <Route path="/results/:resultId" element={<ResultPage />} />
             <Route path="/doctorRegister" element={<DoctorRegistration/>}/>

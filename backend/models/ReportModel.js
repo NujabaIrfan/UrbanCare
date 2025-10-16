@@ -35,7 +35,7 @@ const reportSchema = new mongoose.Schema({
   ],
   patient: { type: String, required: true },
   doctor: { type: String, required: true },
-})
+}, { timestamps: true })
 
 const Report = mongoose.model("Report", reportSchema)
 

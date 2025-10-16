@@ -16,32 +16,32 @@ const statusIcons = {
 }
 
 export default function LabResultCard({
-  testType,
-  status,
-  value,
+  name,
+  severity,
+  result,
   unit,
   recommendedRange,
   remarks
 }) {
 
-  const Icon = statusIcons[status]
+  const Icon = statusIcons[severity]
 
   return (
     <Card className="mt-5 text-left">
       <div className="flex justify-between">
-        <h3 className="text-xl">{testType}</h3>
+        <h3 className="text-xl">{name}</h3>
         <div className={
           "grid items-center justify-items-center rounded-full px-3 py-1 uppercase border text-xs "
-          + (statusColors[status.toLowerCase()].join(" "))
+          + (statusColors[severity.toLowerCase()].join(" "))
         }>
           <div className="flex items-center gap-1">
             <Icon size={14} />
-            <div>{status}</div>
+            <div>{severity}</div>
           </div>
         </div>
       </div>
       <div className="flex mt-3 gap-2 items-baseline">
-        <span className="font-bold text-3xl">{value}</span>
+        <span className="font-bold text-3xl">{result}</span>
         <span className="font-light">{unit}</span>
       </div>
       <div className="text-gray-500 font-light text-sm">Recommended range: {recommendedRange}</div>
