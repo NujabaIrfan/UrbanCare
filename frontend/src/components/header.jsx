@@ -7,6 +7,7 @@ import { AuthContext } from '../context/authContext';
 const adminDropDownMenus = [
   { label: "Profile", path: "/adminProfile" },
   { label: "User Manage", path: "/userManage"},
+  { label: "Doctor Registration", path: "/doctorRegister" },
 ];
 
 const userDropDownMenus = [
