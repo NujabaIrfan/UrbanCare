@@ -35,7 +35,7 @@ export const getReports = async (req, res, next) => {
 export const createReport = async (req, res, next) => {
     try {
         const report = await Report.create(req.body)
-        if (report) return res.status(201).json({ message: "Created" })
+        if (report) return res.status(201).json({ message: "Created", id: report._id })
     } catch (error) {
         if (error.name === "ValidationError") return res.status(400).json({ message: error.message })
         console.error(error)

@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import LabResultCard from "../components/LabResultCard";
 import axios from "axios";
 import { AuthContext } from "../context/authContext";
+import { redirect, useLocation, useNavigate } from "react-router-dom";
 
 const resultBody = {
   name: "",
@@ -239,13 +240,16 @@ function RecommendationForm({ index, data, setData }) {
 
 export default function CreateResults({ }) {
   const { user } = useContext(AuthContext)
+  const { state } = useLocation()
+  const navigate = useNavigate()
+
   const [step, setStep] = useState(1)
   const [data, setData] = useState({
     overallRemarks: "",
     nextAppointment: new Date(),
     results: [resultBody],
     recommendations: [recommendationsBody],
-    patient: "",
+    patient: state.email,
     doctor: ""
   })
 
@@ -258,8 +262,19 @@ export default function CreateResults({ }) {
     if (!user.email) return alert("You need to log in")
 
     evt.preventDefault()
-    const response = await axios.post(`http://localhost:5000/api/reports/`, { ...data, doctor: user.email })
-    console.log(response)
+    try {
+      const response = await axios.post("http://localhost:5000/api/reports", {
+        ...data,
+        doctor: user.email,
+      })
+
+      if (response.status === 201) {
+        navigate(`/results/${response.data.id}`)
+      }
+    } catch (error) {
+      console.error("Error creating report:", error)
+    }
+
   }
 
 
@@ -386,12 +401,7 @@ export default function CreateResults({ }) {
               <div>
                 {data.results.map((result, index) => <LabResultCard
                   key={index}
-                  testType={result.name}
-                  value={result.result}
-                  unit={result.unit}
-                  recommendedRange={result.recommendedRange}
-                  status={result.severity}
-                  remarks={result.remarks}
+                  {...result}
                 />)}
               </div>
             </div>
