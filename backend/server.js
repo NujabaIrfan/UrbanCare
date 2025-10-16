@@ -11,6 +11,7 @@ import Stripe from "stripe";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
+import reportRoutes from "./routes/reportRoute.js"
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use("/api/medical-records", medicalRecordRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", userRoutes);
+app.use("/api/reports", reportRoutes)
 
 // Default route
 app.get("/", (req, res) => {
