@@ -54,11 +54,11 @@ const DoctorRegistration = () => {
       const response = await axios.post('http://localhost:5000/api/auth/register', formData);
 
       if (response.data.success) {
-        setSuccessMessage('Registration successful! OTP has been sent to your email.');
+        setSuccessMessage('Registration successful!');
         toast.success('Registration successful! OTP sent to your email.');
         // Redirect to OTP verification page or login
         setTimeout(() => {
-          navigate('/verify-otp', { state: { email: data.email } });
+          navigate('/doctorRegister');
         }, 2000);
       }
     } catch (error) {
@@ -196,7 +196,7 @@ const DoctorRegistration = () => {
                         message: 'Name can only contain letters'
                       }
                     })}
-                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm ${
+                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm text-gray-800 bg-white ${
                       errors.name ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500'
                     }`}
                     placeholder="Enter your full name"
@@ -219,7 +219,7 @@ const DoctorRegistration = () => {
                         message: 'Invalid email format'
                       }
                     })}
-                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm ${
+                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm text-gray-800 bg-white ${
                       errors.email ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500'
                     }`}
                     placeholder="Enter your email"
@@ -242,7 +242,7 @@ const DoctorRegistration = () => {
                         message: 'Contact number must be 10 digits'
                       }
                     })}
-                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm ${
+                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm text-gray-800 bg-white ${
                       errors.contactNumber ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500'
                     }`}
                     placeholder="Enter contact number"
@@ -262,7 +262,7 @@ const DoctorRegistration = () => {
                     {...register('address', {
                       required: 'Address is required'
                     })}
-                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm ${
+                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm text-gray-800 bg-white ${
                       errors.address ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500'
                     }`}
                     placeholder="Enter your address"
@@ -294,7 +294,7 @@ const DoctorRegistration = () => {
                     {...register('specialization', {
                       required: 'Specialization is required'
                     })}
-                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm ${
+                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm text-gray-800 bg-white ${
                       errors.specialization ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500'
                     }`}
                     placeholder="e.g., Cardiology, Neurology"
@@ -313,7 +313,7 @@ const DoctorRegistration = () => {
                     {...register('qualification', {
                       required: 'Qualification is required'
                     })}
-                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm ${
+                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm text-gray-800 bg-white ${
                       errors.qualification ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500'
                     }`}
                     placeholder="e.g., MBBS, MD, MS"
@@ -338,7 +338,7 @@ const DoctorRegistration = () => {
                       },
                       valueAsNumber: true
                     })}
-                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm ${
+                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm text-gray-800 bg-white ${
                       errors.experience ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500'
                     }`}
                     placeholder="Years of experience"
@@ -389,7 +389,7 @@ const DoctorRegistration = () => {
                     {...register('availableTime', {
                       required: 'Available time is required'
                     })}
-                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm ${
+                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm text-gray-800 bg-white ${
                       errors.availableTime ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500'
                     }`}
                   >
@@ -413,7 +413,7 @@ const DoctorRegistration = () => {
                       {...register('customTime', {
                         required: watchAvailableTime === 'Custom' ? 'Custom time is required' : false
                       })}
-                      className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm ${
+                      className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm text-gray-800 bg-white ${
                         errors.customTime ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500'
                       }`}
                       placeholder="e.g., 10:00 AM - 4:00 PM"
@@ -453,7 +453,7 @@ const DoctorRegistration = () => {
                         message: 'Password must contain uppercase, lowercase, number, and special character'
                       }
                     })}
-                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm ${
+                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm text-gray-800 bg-white ${
                       errors.password ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500'
                     }`}
                     placeholder="Enter password"
@@ -473,7 +473,7 @@ const DoctorRegistration = () => {
                       required: 'Please confirm your password',
                       validate: value => value === watchPassword || 'Passwords do not match'
                     })}
-                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm ${
+                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-all duration-300 shadow-sm text-gray-800 bg-white ${
                       errors.confirmPassword ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500'
                     }`}
                     placeholder="Confirm password"
