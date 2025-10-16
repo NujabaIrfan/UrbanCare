@@ -22,6 +22,7 @@ import VerifyOTP from './pages/VerifyOTP';
 import Profile from './pages/Profile';
 import AdminProfile from './pages/AdminProfile';
 import UserManage from './pages/UserManage';
+import DoctorRegistration from './pages/DoctorRegistration';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="/userManage" element={<UserManage />} />
             <Route path="/results/create" element={<CreateResults />} />
             <Route path="/results/:resultId" element={<ResultPage />} />
+            <Route path="/doctorRegister" element={<DoctorRegistration/>}/>
           </Route>
 
           {/* Routes without Header and Footer */}
