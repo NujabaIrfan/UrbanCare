@@ -90,8 +90,19 @@ export const bookAppointment = async (req, res) => {
             });
         }
 
-        const patientProfile = await Patient.findOne({ patientId: "PAT-E75B964F" });
-        {/*const patientProfile = await Patient.findOne({ userId: req.user.id });*/}
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        let patientProfile = await Patient.findOne({ email: user.email });
+
+        if (!patientProfile) {
+            patientProfile = await Patient.findOne({ userId: req.user.id });
+        }
 
         if (!patientProfile) {
             return res.status(404).json({
@@ -161,7 +172,6 @@ export const bookAppointment = async (req, res) => {
                 doctorContact: doctor.contactNumber || 'N/A'
             });
 
-            const user = await User.findById(req.user.id);
             await sendEmail(user.email, emailSubject, emailMessage);
         } catch (err) {
             console.error('Failed to send appointment email:', err);
