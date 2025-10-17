@@ -5,6 +5,7 @@ import LabResultCard from "../components/LabResultCard";
 import axios from "axios";
 import { AuthContext } from "../context/authContext";
 import { redirect, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const resultBody = {
   name: "",
@@ -39,6 +40,18 @@ function TestResultForm({ index, data, setData }) {
         <button
           type="button"
           className="text-red-500 hover:text-red-600 transition-colors"
+          onClick={() => {
+            if (data.results.length === 1) return setData(prev => (
+              {
+                ...prev,
+                results: [resultBody]
+              }
+            ))
+            setData(prev => ({
+              ...prev,
+              results: prev.results.filter((_, i) => i !== index),
+            }))
+          }}
         >
           <Trash className="w-5 h-5" />
         </button>
@@ -162,6 +175,19 @@ function RecommendationForm({ index, data, setData }) {
         <button
           type="button"
           className="text-red-500 hover:text-red-600 transition-colors"
+          onClick={() => {
+            if (data.recommendations.length === 1) return setData(prev => (
+              {
+                ...prev,
+                recommendations: [recommendationsBody]
+              }
+            ))
+            setData(prev => ({
+              ...prev,
+              recommendations: prev.recommendations.filter((_, i) => i !== index),
+            }))
+          }}
+
         >
           <Trash className="w-5 h-5" />
         </button>
@@ -275,14 +301,14 @@ export default function CreateResults({ }) {
       }
     } catch (error) {
       console.error("Error creating report:", error)
+      toast(error.message, { type: "error" })
     }
 
   }
 
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 p-6 relative overflow-hidden">
-      {state?.email ? (
+      {state ? (
         <>
           <Card className="mt-8">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -397,7 +423,6 @@ export default function CreateResults({ }) {
                     <button
                       type="submit"
                       className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300"
-                      onClick={submit}
                     >
                       Submit
                     </button>
