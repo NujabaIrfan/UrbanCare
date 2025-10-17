@@ -18,7 +18,7 @@ const getPatientMedicalRecords = async(req, res)=>{
     try{
         const{ patientId } = req.params;
         const records = await MedicalRecordModel.find({patientId})
-        .populate('patientId', 'name patientId age gender')  // Added: Populate for patient details
+        .populate('patientId', 'name patientId age gender')  
         .sort({appointmentDate: -1});
         res.status(200).json(records);
     } catch (error){

@@ -4,11 +4,11 @@ import axios from 'axios';
 
 function AddMedicalRecord() {
   const navigate = useNavigate();
-  const { patientId } = useParams(); // Get patientId from URL params
+  const { patientId } = useParams(); 
   const [patients, setPatients] = useState([]);
-  const [selectedPatient, setSelectedPatient] = useState(null); // For displaying patient details
+  const [selectedPatient, setSelectedPatient] = useState(null); 
   const [formData, setFormData] = useState({
-    patientId: patientId || '', // Pre-populate if provided
+    patientId: patientId || '', 
     appointmentDate: '',
     department: '',
     doctor: '',
@@ -21,9 +21,9 @@ function AddMedicalRecord() {
   useEffect(() => {
     fetchPatients();
     if (patientId) {
-      // Auto-fetch and set selected patient if patientId provided
+      
       fetchPatientDetails(patientId);
-      setFormData(prev => ({ ...prev, patientId })); // Ensure it's set
+      setFormData(prev => ({ ...prev, patientId })); 
     }
   }, [patientId]);
 
@@ -51,7 +51,7 @@ function AddMedicalRecord() {
       ...formData,
       [e.target.name]: e.target.value
     });
-    // If patient changes via dropdown, fetch details
+    
     if (e.target.name === 'patientId' && e.target.value) {
       fetchPatientDetails(e.target.value);
     }
@@ -76,7 +76,7 @@ function AddMedicalRecord() {
           comments: ''
         });
         
-        // Redirect to patient's records if patientId provided, else all records
+        // redirect to patient's records if patientId provided, else all records
         const redirectPath = patientId ? `/medical-records/${patientId}` : '/medical-records';
         setTimeout(() => {
           navigate(redirectPath);
@@ -106,16 +106,16 @@ function AddMedicalRecord() {
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Patient Selection - Conditional based on patientId */}
+           
             {patientId ? (
-              // Read-only display for pre-selected patient
+              // Read-only
               <div className="bg-gray-50 p-3 rounded-md">
                 <label className="block text-sm font-medium mb-1">Patient</label>
                 <p className="text-lg font-semibold">{selectedPatient?.name} - {selectedPatient?.patientId} (Age: {selectedPatient?.age})</p>
                 <input type="hidden" name="patientId" value={patientId} />
               </div>
             ) : (
-              // Dropdown for selecting patient
+              
               <div>
                 <label className="block text-sm font-medium mb-1">
                   Patient <span className="text-red-500">*</span>
@@ -152,6 +152,7 @@ function AddMedicalRecord() {
                 name="appointmentDate"
                 value={formData.appointmentDate}
                 onChange={handleChange}
+                max={new Date().toISOString().split('T')[0]}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -230,7 +231,7 @@ function AddMedicalRecord() {
               />
             </div>
 
-            {/* Submit Button */}
+            {/* Submit  */}
             <button
               type="submit"
               disabled={loading}
@@ -240,7 +241,7 @@ function AddMedicalRecord() {
             </button>
           </form>
 
-          {/* Success/Error Message */}
+          {/* Success, error Message */}
           {message && (
             <div
               className={`mt-4 p-3 rounded ${

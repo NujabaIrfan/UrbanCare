@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
-import { Link } from "react-router-dom"; // ✅ ADD THIS
+import { Link } from "react-router-dom"; 
 
 function QRScanner() {
   const [scannedData, setScannedData] = useState("");
@@ -47,7 +47,7 @@ function QRScanner() {
           stopScanning();
         },
         (errorMessage) => {
-          //scan errors - ignore
+          
         }
       );
       setIsScanning(true);
@@ -202,7 +202,7 @@ function QRScanner() {
                 </div>
               )}
 
-              {/* ✅ NEW: Medical Records Button */}
+              {/* Medical Records Button */}
               <div className="pt-4 mt-4 border-t">
                 <Link to={`/medical-records/${patient._id}`}>
                   <button className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition duration-200 font-semibold flex items-center justify-center gap-2">

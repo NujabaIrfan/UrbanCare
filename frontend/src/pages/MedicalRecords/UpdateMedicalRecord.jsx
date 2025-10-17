@@ -37,7 +37,6 @@ function UpdateMedicalRecord() {
         diagnoses: record.diagnoses || '',
         comments: record.comments || ''
       });
-      // Set patient details (populated)
       setSelectedPatient(record.patientId);
       // Set back path based on patient
       setBackPath(record.patientId?._id ? `/medical-records/${record.patientId._id}` : '/medical-records');
@@ -52,7 +51,6 @@ function UpdateMedicalRecord() {
       ...formData,
       [e.target.name]: e.target.value
     });
-    // If patient changes via dropdown (if allowed), fetch details
     if (e.target.name === 'patientId' && e.target.value) {
       fetchPatientDetails(e.target.value);
     }
@@ -79,7 +77,7 @@ function UpdateMedicalRecord() {
       if (response.status === 200) {
         setMessage('Medical record updated successfully!');
         
-        // Redirect to appropriate path after 2 seconds
+        // Redirect after 2 seconds
         setTimeout(() => {
           navigate(backPath);
         }, 2000);
@@ -106,7 +104,6 @@ function UpdateMedicalRecord() {
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Patient Selection - Read-only for edit, but allow change if needed */}
             <div>
               <label className="block text-sm font-medium mb-1">
                 Patient <span className="text-red-500">*</span>
@@ -119,9 +116,7 @@ function UpdateMedicalRecord() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select a patient</option>
-                {/* You can fetch all patients here if allowing change, or hardcode the current one */}
                 <option value={selectedPatient?._id}>{selectedPatient?.name} - {selectedPatient?.patientId} (Age: {selectedPatient?.age})</option>
-                {/* To allow full change, add fetchPatients() and map like in Add */}
               </select>
               {selectedPatient && (
                 <p className="text-sm text-gray-600 mt-1">
@@ -228,7 +223,7 @@ function UpdateMedicalRecord() {
             </button>
           </form>
 
-          {/* Success/Error Message */}
+          {/* Success, error Message */}
           {message && (
             <div
               className={`mt-4 p-3 rounded ${
