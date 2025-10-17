@@ -10,6 +10,7 @@ const adminDropDownMenus = [
   { label: "Doctor Registration", path: "/doctorRegister" },
   { label: "Payment Management", path: "/admin-payment" },
   { label: "Appointment Manage", path: "/adminAppointments"},
+  { label: "Patient Management", path: "/display-patients"},
 ];
 
 const userDropDownMenus = [
@@ -78,7 +79,6 @@ const Header = () => {
           <Link to="/payment" className="text-white text-sm hover:text-gray-200">Payment</Link>
           <a href="#" className="text-white text-sm hover:text-gray-200">Support</a>
           <a href="#" className="text-white text-sm hover:text-gray-200">About</a>
-          <Link to="/display-patients" className="text-white text-sm hover:text-gray-200">Patient Registration</Link>
         </nav>
       </div>
       
