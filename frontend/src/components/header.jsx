@@ -8,12 +8,14 @@ const adminDropDownMenus = [
   { label: "Profile", path: "/adminProfile" },
   { label: "User Manage", path: "/userManage"},
   { label: "Doctor Registration", path: "/doctorRegister" },
-  { label: "Payment Management", path: "/admin-payment" }
+  { label: "Payment Management", path: "/admin-payment" },
+  { label: "Appointment Manage", path: "/adminAppointments"},
 ];
 
 const userDropDownMenus = [
   { label: "Profile", path: "/profile" },
-  { label: "Reports", path: "/results"}
+  { label: "Reports", path: "/results"},
+  { label: "My Appointments", path: "/myAppointments"},
 ];
 
 const doctorDropDownMenus = [];
@@ -71,7 +73,7 @@ const Header = () => {
         </div>
         <nav className="flex gap-6">
           <Link to="/" className="text-white text-sm hover:text-gray-200">Home</Link>
-          <a href="#" className="text-white text-sm hover:text-gray-200">Channeling</a>
+          <a href="/doctorDetails" className="text-white text-sm hover:text-gray-200">Channeling</a>
           <a href="#" className="text-white text-sm hover:text-gray-200">Programs</a>
           <Link to="/payment" className="text-white text-sm hover:text-gray-200">Payment</Link>
           <a href="#" className="text-white text-sm hover:text-gray-200">Support</a>
