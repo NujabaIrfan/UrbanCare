@@ -3,15 +3,15 @@ import { v4 as uuidv4 } from "uuid";
 import PatientModel from "../models/PatientModel.js";
 import { StatusCodes } from "http-status-codes"
 
-// ➕ Add new patient
+//add new patient
 export const addPatient = async (req, res) => {
   try {
     const { name, age, gender, contact, medicalHistory, email } = req.body;
     
-    // Generate unique patient ID
+    // generate patient id
     const patientId = `PAT-${uuidv4().slice(0, 8).toUpperCase()}`;
     
-    // Generate QR code as Base64
+    // generate qr code as Base64
     const qrCodeData = await QRCode.toDataURL(patientId);
     
     const patient = new PatientModel({
@@ -32,7 +32,7 @@ export const addPatient = async (req, res) => {
   }
 };
 
-// 📋 Fetch all patients
+// get all patients
 export const getAllPatients = async (req, res) => {
   try {
     const patients = await PatientModel.find().sort({ createdAt: -1 });
@@ -42,7 +42,7 @@ export const getAllPatients = async (req, res) => {
   }
 };
 
-// 🔍 Search patient by QR code value
+// search patient by qr code value
 export const getPatientByQRCode = async (req, res) => {
   try {
     const patient = await PatientModel.findOne({
@@ -59,7 +59,7 @@ export const getPatientByQRCode = async (req, res) => {
   }
 };
 
-// 🧾 Fetch patient by MongoDB ID
+// fetch patient by id
 export const getPatientById = async (req, res) => {
   try {
     const patient = await PatientModel.findById(req.params.id);
@@ -74,7 +74,7 @@ export const getPatientById = async (req, res) => {
   }
 };
 
-// ❌ Delete patient
+//delete patient
 export const deletePatient = async (req, res) => {
   try {
     const patient = await PatientModel.findByIdAndDelete(req.params.id);

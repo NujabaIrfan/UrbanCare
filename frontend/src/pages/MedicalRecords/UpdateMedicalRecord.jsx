@@ -7,7 +7,7 @@ const { REACT_APP_API_URL } = process.env
 
 function UpdateMedicalRecord() {
   const navigate = useNavigate();
-  const { recordId } = useParams(); // Get recordId from URL params
+  const { recordId } = useParams(); 
   const [formData, setFormData] = useState({
     patientId: '',
     appointmentDate: '',
@@ -16,8 +16,8 @@ function UpdateMedicalRecord() {
     diagnoses: '',
     comments: ''
   });
-  const [selectedPatient, setSelectedPatient] = useState(null); // For displaying patient details
-  const [backPath, setBackPath] = useState('/medical-records'); // Default back path
+  const [selectedPatient, setSelectedPatient] = useState(null); 
+  const [backPath, setBackPath] = useState('/medical-records'); // default back path
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -33,15 +33,13 @@ function UpdateMedicalRecord() {
       const record = response.data;
       setFormData({
         patientId: record.patientId._id || record.patientId,
-        appointmentDate: record.appointmentDate ? record.appointmentDate.split('T')[0] : '', // Format date
+        appointmentDate: record.appointmentDate ? record.appointmentDate.split('T')[0] : '', // format date
         department: record.department || '',
         doctor: record.doctor || '',
         diagnoses: record.diagnoses || '',
         comments: record.comments || ''
       });
-      // Set patient details (populated)
       setSelectedPatient(record.patientId);
-      // Set back path based on patient
       setBackPath(record.patientId?._id ? `/medical-records/${record.patientId._id}` : '/medical-records');
     } catch (error) {
       console.error('Error fetching record:', error);
@@ -54,7 +52,6 @@ function UpdateMedicalRecord() {
       ...formData,
       [e.target.name]: e.target.value
     });
-    // If patient changes via dropdown (if allowed), fetch details
     if (e.target.name === 'patientId' && e.target.value) {
       fetchPatientDetails(e.target.value);
     }
@@ -81,7 +78,7 @@ function UpdateMedicalRecord() {
       if (response.status === 200) {
         setMessage('Medical record updated successfully!');
         
-        // Redirect to appropriate path after 2 seconds
+        // redirect after 2 seconds
         setTimeout(() => {
           navigate(backPath);
         }, 2000);
@@ -108,7 +105,7 @@ function UpdateMedicalRecord() {
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Patient Selection - Read-only for edit, but allow change if needed */}
+            {/* read only */}
             <div>
               <label className="block text-sm font-medium mb-1">
                 Patient <span className="text-red-500">*</span>
@@ -121,9 +118,7 @@ function UpdateMedicalRecord() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select a patient</option>
-                {/* You can fetch all patients here if allowing change, or hardcode the current one */}
                 <option value={selectedPatient?._id}>{selectedPatient?.name} - {selectedPatient?.patientId} (Age: {selectedPatient?.age})</option>
-                {/* To allow full change, add fetchPatients() and map like in Add */}
               </select>
               {selectedPatient && (
                 <p className="text-sm text-gray-600 mt-1">
@@ -220,7 +215,7 @@ function UpdateMedicalRecord() {
               />
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
@@ -230,7 +225,7 @@ function UpdateMedicalRecord() {
             </button>
           </form>
 
-          {/* Success/Error Message */}
+          {/* Success, error message */}
           {message && (
             <div
               className={`mt-4 p-3 rounded ${

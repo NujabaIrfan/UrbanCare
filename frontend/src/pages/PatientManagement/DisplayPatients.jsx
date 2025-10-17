@@ -31,11 +31,11 @@ function DisplayPatients() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
+        {/* Header  */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">Patient Details</h1>
           
-          {/* Navigation Buttons */}
+          {/* Navigation buttons */}
           <div className="flex gap-3 mb-4">
             <Link to="/add-patient">
               <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200 font-medium">
@@ -51,7 +51,7 @@ function DisplayPatients() {
           </div>
         </div>
 
-        {/* Patients Table */}
+        {/* Patients list */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
