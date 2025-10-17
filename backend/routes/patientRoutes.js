@@ -9,19 +9,19 @@ import {
 
 const router = express.Router();
 
-// ➕ Add new patient
+// add new patient
 router.post("/", addPatient);
 
-// 📋 Fetch all patients
+// getall patients
 router.get("/", getAllPatients);
 
-// 🔍 Search patient by QR code value
+// search patient by qr code value
 router.get("/lookup/:qrCode", getPatientByQRCode);
 
-// 🧾 Fetch patient by MongoDB ID
+// get patient by id
 router.get("/:id", getPatientById);
 
-// ❌ Delete patient
+// delete patient
 router.delete("/:id", deletePatient);
 
 export default router;
