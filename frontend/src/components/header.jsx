@@ -10,6 +10,7 @@ const adminDropDownMenus = [
   { label: "Doctor Registration", path: "/doctorRegister" },
   { label: "Payment Management", path: "/admin-payment" },
   { label: "Appointment Manage", path: "/adminAppointments"},
+  { label: "Patient Management", path: "/display-patients"},
 ];
 
 const userDropDownMenus = [
