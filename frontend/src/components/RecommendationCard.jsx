@@ -15,7 +15,7 @@ const typeIcons = {
 }
 
 export default function RecommendationCard({
-  title,
+  recommendation,
   description,
   priority,
   type,
@@ -29,7 +29,7 @@ export default function RecommendationCard({
       <div className="flex justify-between">
         <div className="flex gap-3">
           <Icon />
-          <h3 className="text-lg">{title}</h3>
+          <h3 className="text-lg">{recommendation}</h3>
         </div>
         <div className="flex gap-2">
           <div className={
@@ -48,7 +48,7 @@ export default function RecommendationCard({
       </p>
       <div>
         <b>Due date: </b>
-        <span>{dueDate}</span>
+        <span>{new Date(dueDate).toLocaleDateString()}</span>
       </div>
     </Card>
   )

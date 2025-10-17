@@ -8,11 +8,13 @@ const adminDropDownMenus = [
   { label: "Profile", path: "/adminProfile" },
   { label: "User Manage", path: "/userManage"},
   { label: "Doctor Registration", path: "/doctorRegister" },
+  { label: "Payment Management", path: "/admin-payment" }
   { label: "Appointment Manage", path: "/adminAppointments"},
 ];
 
 const userDropDownMenus = [
   { label: "Profile", path: "/profile" },
+  { label: "Reports", path: "/results"}
   { label: "My Appointments", path: "/myAppointments"},
 ];
 

@@ -10,6 +10,7 @@ function AddPatient() {
     gender: "Male",
     contact: "",
     medicalHistory: "",
+    email: ""
   });
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -91,7 +92,7 @@ function AddPatient() {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-6xl mx-auto">
-        
+
         <h4 className="font-bold mb-6 text-left">
           <Link to="/display-patients">Patients</Link>
         </h4>
@@ -110,6 +111,18 @@ function AddPatient() {
                 type="text"
                 name="name"
                 value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
