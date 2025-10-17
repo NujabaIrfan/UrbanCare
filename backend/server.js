@@ -15,6 +15,8 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
 import reportRoutes from "./routes/reportRoute.js"
+import doctorRoutes from "./routes/doctorRoutes.js";
+import channelingRoutes from "./routes/channelingRoutes.js";
 
 dotenv.config();
 
@@ -48,6 +50,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", userRoutes);
 app.use("/api/reports", reportRoutes)
+app.use("/api/doctors", doctorRoutes);
+app.use("/api/channel", channelingRoutes);
 
 // Default route
 app.get("/", (req, res) => {
