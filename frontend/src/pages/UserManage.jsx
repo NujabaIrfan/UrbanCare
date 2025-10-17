@@ -3,6 +3,8 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
+const { REACT_APP_API_URL } = process.env
+
 function UserManage() {
     const [users, setUsers] = useState([]);
     const [error, setError] = useState(null);
@@ -15,7 +17,7 @@ function UserManage() {
 
     const fetchUsers = () => {
         setLoading(true);
-        axios.get("http://localhost:5000/api/profile/get-all-users")
+        axios.get(`${REACT_APP_API_URL}/api/profile/get-all-users`)
             .then((response) => {
                 console.log("Fetched users:", response.data);
                 setUsers(response.data);

@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+const { REACT_APP_API_URL } = process.env
+
 function AddPatient() {
   const [formData, setFormData] = useState({
     name: "",
@@ -22,7 +24,7 @@ function AddPatient() {
 
   const fetchPatients = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/patients");
+      const response = await fetch(`${REACT_APP_API_URL}/api/patients`);
       const data = await response.json();
       setPatients(data);
     } catch (error) {
@@ -43,7 +45,7 @@ function AddPatient() {
     setMessage("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/patients", {
+      const response = await fetch(`${REACT_APP_API_URL}/api/patients`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +79,7 @@ function AddPatient() {
       return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/patients/${id}`, {
+      const response = await fetch(`${REACT_APP_API_URL}/api/patients/${id}`, {
         method: "DELETE",
       });
 

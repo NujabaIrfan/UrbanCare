@@ -1,5 +1,6 @@
 import GovernmentFunding from "../../models/GovermentFunding.js";
 import Receipt from "../../models/Receipt.js";
+import { StatusCodes } from "http-status-codes"
 
 export const governmentController = {
   // 🏛️ Create Government Funding Request
@@ -20,7 +21,7 @@ export const governmentController = {
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ 
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
         message: "Government funding failed", 
         error: error.message 
       });
@@ -32,10 +33,10 @@ export const governmentController = {
     try {
       const funding = await GovernmentFunding.findById(req.params.id);
       if (!funding) return res.status(404).json({ message: "Government funding request not found" });
-      res.status(200).json(funding);
+      res.status(StatusCodes.OK).json(funding);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -49,7 +50,7 @@ export const governmentController = {
         { new: true, runValidators: true }
       );
       
-      if (!updatedFunding) return res.status(404).json({ message: "Government funding request not found" });
+      if (!updatedFunding) return res.status(StatusCodes.NOT_FOUND).json({ message: "Government funding request not found" });
       
       // Update receipt status based on funding status
       if (status === "approved") {
@@ -58,10 +59,10 @@ export const governmentController = {
         await Receipt.findByIdAndUpdate(updatedFunding.billId, { status: "Pending" });
       }
       
-      res.status(200).json(updatedFunding);
+      res.status(StatusCodes.OK).json(updatedFunding);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -69,18 +70,18 @@ export const governmentController = {
   deleteFunding: async (req, res) => {
     try {
       const deletedFunding = await GovernmentFunding.findByIdAndDelete(req.params.id);
-      if (!deletedFunding) return res.status(404).json({ message: "Government funding request not found" });
+      if (!deletedFunding) return res.status(StatusCodes.NOT_FOUND).json({ message: "Government funding request not found" });
       
       // Reset receipt status
       await Receipt.findByIdAndUpdate(deletedFunding.billId, { status: "Pending" });
       
-      res.status(200).json({ 
+      res.status(StatusCodes.OK).json({ 
         message: "Government funding request deleted successfully", 
         deletedFunding 
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   }
 };

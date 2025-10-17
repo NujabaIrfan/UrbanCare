@@ -4,6 +4,8 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
+const { REACT_APP_API_URL } = process.env
+
 function VerifyOTP() {
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const [resendDisabled, setResendDisabled] = useState(true);
@@ -64,7 +66,7 @@ function VerifyOTP() {
         }
 
         try {
-            const response = await axios.post("http://localhost:5000/api/auth/verify-otp", {
+            const response = await axios.post(`${REACT_APP_API_URL}/api/auth/verify-otp`, {
                 email: localStorage.getItem("email"),
                 otp: enteredOTP
             });
@@ -100,7 +102,7 @@ function VerifyOTP() {
     const handleResendOTP = async () => {
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:5000/api/auth/resend-otp", {
+            const response = await axios.post(`${REACT_APP_API_URL}/api/auth/resend-otp`, {
                 email: localStorage.getItem("email")
             });
             

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+const { REACT_APP_API_URL } = process.env
+
 const UserBills = () => {
   const userId = "4567890"; // Replace with dynamic user ID from login/session
   const [bills, setBills] = useState([]);
@@ -7,7 +9,7 @@ const UserBills = () => {
 
   const fetchBills = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/receipts/patient/${userId}`);
+      const response = await fetch(`${REACT_APP_API_URL}/api/receipts/patient/${userId}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch bills');

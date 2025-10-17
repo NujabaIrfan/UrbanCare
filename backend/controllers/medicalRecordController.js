@@ -1,5 +1,6 @@
 import MedicalRecordModel from '../models/MedicalRecordModel.js';
 import PatientModel from '../models/PatientModel.js';
+import { StatusCodes } from "http-status-codes"
 
 // get all medical records
 const getAllMedicalRecords = async (req, res) => {
@@ -8,9 +9,9 @@ const getAllMedicalRecords = async (req, res) => {
       .populate('patientId', 'name patientId age gender')
       .sort({ appointmentDate: -1 }); //descending date order
     
-    res.status(200).json(records);
+    res.status(StatusCodes.OK).json(records);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 };
 
@@ -20,9 +21,9 @@ const getPatientMedicalRecords = async(req, res)=>{
         const records = await MedicalRecordModel.find({patientId})
         .populate('patientId', 'name patientId age gender')  
         .sort({appointmentDate: -1});
-        res.status(200).json(records);
+        res.status(StatusCodes.OK).json(records);
     } catch (error){
-        res.status(500).json({ message: error.message });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
 };
 
@@ -35,12 +36,12 @@ const getMedicalRecordById = async(req, res)=>{
       .populate('patientId', 'name age gender contact');
 
         if (!record) {
-      return res.status(404).json({ message: 'Medical record not found' });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: 'Medical record not found' });
     }
 
-    res.status(200).json(record);
+    res.status(StatusCodes.OK).json(record);
     } catch(error){
-        res.status(500).json({ message: error.message });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
 };
 
@@ -52,7 +53,7 @@ const createMedicalRecord = async(req, res)=> {
         //check if patient exists
          const patient = await PatientModel.findById(patientId);
     if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: 'Patient not found' });
     }
 
      const newRecord = new MedicalRecordModel({
@@ -65,9 +66,9 @@ const createMedicalRecord = async(req, res)=> {
     });
 
     await newRecord.save();
-    res.status(201).json(newRecord);
+    res.status(StatusCodes.CREATED).json(newRecord);
     } catch(error){
-        res.status(500).json({ message: error.message });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
 };
 
@@ -84,12 +85,12 @@ const updateMedicalRecord = async(req, res)=> {
     );
     
     if (!updatedRecord) {
-      return res.status(404).json({ message: 'Medical record not found' });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: 'Medical record not found' });
     }
     
-    res.status(200).json(updatedRecord);
+    res.status(StatusCodes.OK).json(updatedRecord);
     } catch(error){
-        res.status(500).json({ message: error.message });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
 };
 
@@ -101,12 +102,12 @@ const deleteMedicalRecord = async (req, res) => {
     const deletedRecord = await MedicalRecordModel.findByIdAndDelete(id);
     
     if (!deletedRecord) {
-      return res.status(404).json({ message: 'Medical record not found' });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: 'Medical record not found' });
     }
     
-    res.status(200).json({ message: 'Medical record deleted successfully' });
+    res.status(StatusCodes.OK).json({ message: 'Medical record deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 };
 

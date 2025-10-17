@@ -5,6 +5,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
 
+const { REACT_APP_API_URL } = process.env
+
 const Profile = () => {
     const { user, setUser } = useContext(AuthContext);
     const [profile, setProfile] = useState({
@@ -46,7 +48,7 @@ const Profile = () => {
             console.log("🔄 Attempting profile update", { updateData: profile });
 
             const response = await axios.put(
-                "http://localhost:5000/api/profile/update",
+                `${REACT_APP_API_URL}/api/profile/update`,
                 profile,
                 {
                     headers: { 
@@ -106,7 +108,7 @@ const Profile = () => {
             console.log("🔐 Attempting password change");
 
             const response = await axios.put(
-                "http://localhost:5000/api/profile/change-password",
+                `${REACT_APP_API_URL}/api/profile/change-password`,
                 { oldPassword, newPassword },
                 {
                     headers: { 
@@ -167,7 +169,7 @@ const Profile = () => {
             console.log("🗑️ Attempting account deletion");
 
             const response = await axios.delete(
-                "http://localhost:5000/api/profile/delete",
+                `${REACT_APP_API_URL}/api/profile/delete`,
                 {
                     headers: { 
                         Authorization: `Bearer ${token}`,

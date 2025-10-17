@@ -1,4 +1,5 @@
 import Receipt from "../../models/Receipt.js";
+import { StatusCodes } from "http-status-codes"
 
 export const receiptController = {
   // 🟢 CREATE Receipt
@@ -7,7 +8,7 @@ export const receiptController = {
       const { receiptNo, patientId, patientName, services, total } = req.body;
       
       if (!receiptNo || !patientId || !patientName || !services || !total) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: "All fields are required" });
       }
 
       const newReceipt = new Receipt({ 
@@ -20,10 +21,10 @@ export const receiptController = {
       });
 
       const savedReceipt = await newReceipt.save();
-      res.status(201).json(savedReceipt);
+      res.status(StatusCodes.CREATED).json(savedReceipt);
     } catch (error) {
       console.error("Error creating receipt:", error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -31,10 +32,10 @@ export const receiptController = {
   getAllReceipts: async (req, res) => {
     try {
       const receipts = await Receipt.find().sort({ createdAt: -1 });
-      res.status(200).json(receipts);
+      res.status(StatusCodes.OK).json(receipts);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -42,11 +43,11 @@ export const receiptController = {
   getReceiptById: async (req, res) => {
     try {
       const receipt = await Receipt.findById(req.params.id);
-      if (!receipt) return res.status(404).json({ message: "Receipt not found" });
-      res.status(200).json(receipt);
+      if (!receipt) return res.status(StatusCodes.NOT_FOUND).json({ message: "Receipt not found" });
+      res.status(StatusCodes.OK).json(receipt);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -54,11 +55,11 @@ export const receiptController = {
   getReceiptsByPatientId: async (req, res) => {
     try {
       const receipts = await Receipt.find({ patientId: req.params.patientId }).sort({ createdAt: -1 });
-      if (!receipts.length) return res.status(404).json({ message: "No receipts found" });
-      res.status(200).json(receipts);
+      if (!receipts.length) return res.status(StatusCodes.NOT_FOUND).json({ message: "No receipts found" });
+      res.status(StatusCodes.OK).json(receipts);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -71,11 +72,11 @@ export const receiptController = {
         { receiptNo, patientId, patientName, services, total, status },
         { new: true, runValidators: true }
       );
-      if (!updatedReceipt) return res.status(404).json({ message: "Receipt not found" });
-      res.status(200).json(updatedReceipt);
+      if (!updatedReceipt) return res.status(StatusCodes.NOT_FOUND).json({ message: "Receipt not found" });
+      res.status(StatusCodes.OK).json(updatedReceipt);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -83,11 +84,11 @@ export const receiptController = {
   deleteReceipt: async (req, res) => {
     try {
       const deletedReceipt = await Receipt.findByIdAndDelete(req.params.id);
-      if (!deletedReceipt) return res.status(404).json({ message: "Receipt not found" });
-      res.status(200).json({ message: "Receipt deleted successfully", deletedReceipt });
+      if (!deletedReceipt) return res.status(StatusCodes.NOT_FOUND).json({ message: "Receipt not found" });
+      res.status(StatusCodes.OK).json({ message: "Receipt deleted successfully", deletedReceipt });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   }
 };

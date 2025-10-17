@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
+const { REACT_APP_API_URL } = process.env
+
 export default function ResultPage({ }) {
 
   // i can do user based authorization but from my experience no one from sliit cared so far so I'll just leave it
@@ -16,7 +18,7 @@ export default function ResultPage({ }) {
   useEffect(() => {
     (async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/reports/${resultId}`)
+        const response = await axios.get(`${REACT_APP_API_URL}/api/reports/${resultId}`)
         if (response.status !== 200) return setData(null)
         console.log(response.data)
         setData(response.data)

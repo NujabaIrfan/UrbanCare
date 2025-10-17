@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-const URL = "http://localhost:5000/api/patients";
+const { REACT_APP_API_URL } = process.env
 
 const fetchHandler = async () => {
-  return await axios.get(URL).then((res) => res.data);
+  return await axios.get(`${REACT_APP_API_URL}/api/patients`).then((res) => res.data);
 };
 
 function DisplayPatients() {
@@ -21,7 +21,7 @@ function DisplayPatients() {
     );
     if (confirmDelete) {
       await axios
-        .delete(`http://localhost:5000/api/patients/${id}`)
+        .delete(`${REACT_APP_API_URL}/api/patients/${id}`)
         .then(() =>
           setPatients(patients.filter((patient) => patient._id !== id))
         );

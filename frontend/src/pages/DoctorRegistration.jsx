@@ -5,6 +5,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const { REACT_APP_API_URL } = process.env
+
 const DoctorRegistration = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const [loading, setLoading] = useState(false);
@@ -51,7 +53,7 @@ const DoctorRegistration = () => {
         delete formData.customTime;
       }
 
-      const response = await axios.post('http://localhost:5000/api/auth/register', formData);
+      const response = await axios.post(`${REACT_APP_API_URL}/api/auth/register`, formData);
 
       if (response.data.success) {
         setSuccessMessage('Registration successful!');

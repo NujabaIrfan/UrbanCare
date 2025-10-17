@@ -4,6 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const { REACT_APP_API_URL } = process.env
+
 function ForgotPassword() {
     const [step, setStep] = useState(1); // 1 = Verify Email, 2 = Reset Password
     const [email, setEmail] = useState("");
@@ -117,7 +119,7 @@ function ForgotPassword() {
         }
 
         try {
-            const response = await axios.post("http://localhost:5000/api/auth/verify-email", { email });
+            const response = await axios.post(`${REACT_APP_API_URL}/api/auth/verify-email`, { email });
             setMessage(response.data.message);
             toast.success("Email verified! You can now reset your password.");
             setTimeout(() => {
@@ -154,7 +156,7 @@ function ForgotPassword() {
         }
 
         try {
-            const response = await axios.post("http://localhost:5000/api/auth/forgot-password", { 
+            const response = await axios.post(`${REACT_APP_API_URL}/api/auth/forgot-password`, { 
                 email, 
                 newPassword, 
                 confirmPassword 

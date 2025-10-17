@@ -7,6 +7,8 @@ import { AuthContext } from "../context/authContext";
 import { redirect, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+const { REACT_APP_API_URL } = process.env
+
 const resultBody = {
   name: "",
   result: "",
@@ -291,7 +293,7 @@ export default function CreateResults({ }) {
 
     evt.preventDefault()
     try {
-      const response = await axios.post("http://localhost:5000/api/reports", {
+      const response = await axios.post(`${REACT_APP_API_URL}/api/reports`, {
         ...data,
         doctor: user.email,
       })
