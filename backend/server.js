@@ -11,6 +11,8 @@ import Stripe from "stripe";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
+import doctorRoutes from "./routes/doctorRoutes.js";
+import channelingRoutes from "./routes/channelingRoutes.js";
 
 dotenv.config();
 
@@ -40,6 +42,8 @@ app.use("/api/medical-records", medicalRecordRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", userRoutes);
+app.use("/api/doctors", doctorRoutes);
+app.use("/api/channel", channelingRoutes);
 
 // Default route
 app.get("/", (req, res) => {

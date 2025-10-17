@@ -23,6 +23,10 @@ import Profile from './pages/Profile';
 import AdminProfile from './pages/AdminProfile';
 import UserManage from './pages/UserManage';
 import DoctorRegistration from './pages/DoctorRegistration';
+import BookAppointment from './pages/BookAppointment';
+import DoctorDetails from './pages/DoctorDetails';
+import MyAppointments from './pages/MyAppointments';
+import AdminAppointments from './pages/AdminAppointments';
 
 function App() {
   return (
@@ -47,6 +51,11 @@ function App() {
             <Route path="/results/create" element={<CreateResults />} />
             <Route path="/results/:resultId" element={<ResultPage />} />
             <Route path="/doctorRegister" element={<DoctorRegistration/>}/>
+            <Route path="/bookAppointment" element={<BookAppointment/>}/>
+            <Route path="/doctorDetails" element={<DoctorDetails/>}/>
+            <Route path="/doctor/:id" element={<DoctorDetails/>}/>
+            <Route path="/myAppointments" element={<MyAppointments/>}/>
+            <Route path="/adminAppointments" element={<AdminAppointments/>}/>
           </Route>
 
           {/* Routes without Header and Footer */}
