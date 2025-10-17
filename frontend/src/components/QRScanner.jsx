@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
+import { Link } from "react-router-dom"; // ✅ ADD THIS
 
 function QRScanner() {
   const [scannedData, setScannedData] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [patient, setPatient] = useState(null);
   const [error, setError] = useState("");
-  const [scanStatus, setScanStatus] = useState(""); //success or error
+  const [scanStatus, setScanStatus] = useState("");
   const html5QrCodeRef = useRef(null);
 
   const fetchPatientByQR = async (qrCode) => {
@@ -14,7 +15,6 @@ function QRScanner() {
       const response = await fetch(
         `http://localhost:5000/api/patients/lookup/${qrCode}`
       );
-
       if (response.ok) {
         const data = await response.json();
         setPatient(data);
@@ -35,7 +35,6 @@ function QRScanner() {
   const startScanning = async () => {
     try {
       html5QrCodeRef.current = new Html5Qrcode("qr-reader");
-
       await html5QrCodeRef.current.start(
         { facingMode: "environment" },
         {
@@ -51,7 +50,6 @@ function QRScanner() {
           //scan errors - ignore
         }
       );
-
       setIsScanning(true);
       setPatient(null);
       setError("");
@@ -92,7 +90,7 @@ function QRScanner() {
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-6 text-center">QR Code Scanner</h1>
-
+        
         {/* scanner container */}
         <div
           className={`bg-white rounded-lg shadow-lg p-6 mb-6 transition-all duration-300 ${
@@ -104,7 +102,6 @@ function QRScanner() {
           }`}
         >
           <div id="qr-reader" className="mb-4 rounded-lg overflow-hidden"></div>
-
           <div className="flex gap-2">
             {!isScanning ? (
               <button
@@ -122,7 +119,6 @@ function QRScanner() {
               </button>
             )}
           </div>
-
           {scannedData && (
             <div className="mt-4 p-3 bg-gray-100 rounded">
               <p className="text-sm text-gray-600">Scanned Code: </p>
@@ -162,35 +158,27 @@ function QRScanner() {
             <h2 className="text-2xl font-bold mb-4 text-green-700">
               Patient Record
             </h2>
-
             <div className="space-y-3">
               <div className="flex justify-between border-b pb-2">
-                <span className="font-semibold text-gray-600">
-                  Patient ID:{" "}
-                </span>
+                <span className="font-semibold text-gray-600">Patient ID: </span>
                 <span className="font-mono">{patient.patientId}</span>
               </div>
-
               <div className="flex justify-between border-b pb-2">
                 <span className="font-semibold text-gray-600">Name:</span>
                 <span>{patient.name}</span>
               </div>
-
               <div className="flex justify-between border-b pb-2">
                 <span className="font-semibold text-gray-600">Age:</span>
                 <span>{patient.age} years</span>
               </div>
-
               <div className="flex justify-between border-b pb-2">
                 <span className="font-semibold text-gray-600">Gender:</span>
                 <span>{patient.gender}</span>
               </div>
-
               <div className="flex justify-between border-b pb-2">
                 <span className="font-semibold text-gray-600">Contact:</span>
                 <span>{patient.contact}</span>
               </div>
-
               {patient.medicalHistory && (
                 <div className="pt-2">
                   <span className="font-semibold text-gray-600 block mb-2">
@@ -201,7 +189,6 @@ function QRScanner() {
                   </p>
                 </div>
               )}
-
               {patient.qrCode && (
                 <div className="pt-2 text-center">
                   <span className="font-semibold text-gray-600 block mb-2">
@@ -214,6 +201,16 @@ function QRScanner() {
                   />
                 </div>
               )}
+
+              {/* ✅ NEW: Medical Records Button */}
+              <div className="pt-4 mt-4 border-t">
+                <Link to={`/medical-records/${patient._id}`}>
+                  <button className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition duration-200 font-semibold flex items-center justify-center gap-2">
+                    <span>📋</span>
+                    View Medical Records
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
         )}
