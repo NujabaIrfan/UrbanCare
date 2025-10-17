@@ -15,10 +15,7 @@
     },
     "transformIgnorePatterns": [
       "node_modules/(?!(your-es6-module)/)"
-    ],
-    "moduleNameMapper": {
-      "^(\\.{1,2}/.*)\\.js$": "$1"
-    }
+    ]
   },
   "keywords": [],
   "author": "",
