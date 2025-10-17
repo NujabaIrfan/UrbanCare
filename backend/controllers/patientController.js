@@ -2,7 +2,7 @@ import QRCode from "qrcode";
 import { v4 as uuidv4 } from "uuid";
 import PatientModel from "../models/PatientModel.js";
 
-// ➕ Add new patient
+// Add new patient
 export const addPatient = async (req, res) => {
   try {
     const { name, age, gender, contact, medicalHistory, email } = req.body;
@@ -31,7 +31,7 @@ export const addPatient = async (req, res) => {
   }
 };
 
-// 📋 Fetch all patients
+// Fetch all patients
 export const getAllPatients = async (req, res) => {
   try {
     const patients = await PatientModel.find().sort({ createdAt: -1 });
@@ -41,7 +41,7 @@ export const getAllPatients = async (req, res) => {
   }
 };
 
-// 🔍 Search patient by QR code value
+// Search patient by QR code value
 export const getPatientByQRCode = async (req, res) => {
   try {
     const patient = await PatientModel.findOne({
@@ -58,7 +58,7 @@ export const getPatientByQRCode = async (req, res) => {
   }
 };
 
-// 🧾 Fetch patient by MongoDB ID
+//Fetch patient by  ID
 export const getPatientById = async (req, res) => {
   try {
     const patient = await PatientModel.findById(req.params.id);
@@ -73,7 +73,7 @@ export const getPatientById = async (req, res) => {
   }
 };
 
-// ❌ Delete patient
+// Delete patient
 export const deletePatient = async (req, res) => {
   try {
     const patient = await PatientModel.findByIdAndDelete(req.params.id);

@@ -9,7 +9,7 @@ import {
   deleteMedicalRecord
 } from '../controllers/medicalRecordController.js';
 
-// Get all medical records (add this BEFORE the /:id route)
+// Get all medical records 
 router.get('/', getAllMedicalRecords);
 
 // Get all medical records for a specific patient
