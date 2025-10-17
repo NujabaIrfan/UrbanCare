@@ -66,19 +66,19 @@ export default function ResultPage({ }) {
             <div className="grid gap-2 md:flex md:gap-8 mt-5 [&>div]:grid [&>div]:grid-cols-2 [&>div]:w-full [&>div]:md:flex [&>div]:md:gap-2 [&>div]:md:w-auto [&>div]:justify-items-start">
               <div>
                 <b>Patient:</b>
-                <span>{data.patient.name}</span>
+                <span>{data.patient?.name || "N/A"}</span>
               </div>
               <div>
                 <b>Age:</b>
-                <span>{data.patient.age}</span>
+                <span>{data.patient?.age || "N/A"}</span>
               </div>
               <div>
                 <b>Gender:</b>
-                <span>{data.patient.gender}</span>
+                <span>{data.patient?.gender || "N/A"}</span>
               </div>
               <div>
                 <b>Patient ID:</b>
-                <span>{data.patient.patientId}</span>
+                <span>{data.patient?.patientId || "N/A"}</span>
               </div>
               <div>
                 <b>Test Date:</b>

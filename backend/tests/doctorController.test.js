@@ -173,243 +173,259 @@ describe('Doctor Controller Tests', () => {
 
     // ✅ bookAppointment Tests
     describe('bookAppointment', () => {
-        beforeEach(() => {
-            req.user = { id: 'user123' };
-            req.params.id = 'doctor123';
-            req.body = {
-                appointmentDate: '2024-01-20',
-                appointmentTime: '14:00',
-                symptoms: 'Fever and headache',
-                notes: 'Regular checkup'
-            };
-        });
+    beforeEach(() => {
+        req.user = { id: 'user123' };
+        req.params.id = 'doctor123';
+        req.body = {
+            appointmentDate: '2024-01-20',
+            appointmentTime: '14:00',
+            symptoms: 'Fever and headache',
+            notes: 'Regular checkup'
+        };
+    });
 
-        it('should book appointment successfully', async () => {
-            const mockDoctor = {
-                _id: 'doctor123',
-                name: 'Dr. Smith',
-                contactNumber: '1234567890'
-            };
+    it('should book appointment successfully and send email to logged-in user', async () => {
+        const mockDoctor = {
+            _id: 'doctor123',
+            name: 'Dr. Smith',
+            contactNumber: '1234567890'
+        };
 
-            const mockPatient = {
-                patientId: 'PAT-E75B964F',
-                name: 'John Doe',
-                contact: '9876543210'
-            };
+        const mockPatient = {
+            patientId: 'PAT-E75B964F',
+            name: 'John Doe',
+            contact: '9876543210'
+        };
 
-            const mockLastAppointment = {
-                appointmentNumber: '5'
-            };
+        const mockLastAppointment = {
+            appointmentNumber: '5'
+        };
 
-            const mockUser = {
-                email: 'john@example.com'
-            };
+        const mockUser = {
+            _id: 'user123',
+            email: 'john@example.com'
+        };
 
-            User.findOne.mockResolvedValue(mockDoctor);
-            Patient.findOne.mockResolvedValue(mockPatient);
-            Appointment.findOne.mockResolvedValueOnce(null); // No existing appointment
-            Appointment.findOne.mockReturnValueOnce({
+        User.findOne.mockResolvedValue(mockDoctor);
+        Patient.findOne.mockResolvedValue(mockPatient);
+        Appointment.findOne
+            .mockResolvedValueOnce(null) // No existing appointment
+            .mockReturnValueOnce({
                 sort: jest.fn().mockReturnValue({
                     select: jest.fn().mockResolvedValue(mockLastAppointment)
                 })
             });
-            User.findById.mockResolvedValue(mockUser);
-            
-            // Mock appointment save
-            const mockAppointment = {
-                _id: 'appointment123',
+        User.findById.mockResolvedValue(mockUser);
+
+        const mockAppointment = {
+            _id: 'appointment123',
+            appointmentNumber: '6',
+            appointmentDate: '2024-01-20',
+            appointmentTime: '14:00',
+            status: 'pending',
+            save: jest.fn().mockResolvedValue(true)
+        };
+        Appointment.mockImplementation(() => mockAppointment);
+
+        appointmentTemplate.mockReturnValue('Email content');
+        sendEmail.mockResolvedValue(true);
+
+        await bookAppointment(req, res);
+
+        expect(User.findOne).toHaveBeenCalledWith({
+            _id: 'doctor123',
+            role: 'doctor'
+        });
+        expect(Patient.findOne).toHaveBeenCalledWith({
+        email: 'john@example.com'
+        });
+        expect(User.findById).toHaveBeenCalledWith('user123');
+        expect(sendEmail).toHaveBeenCalledWith(
+            'john@example.com',
+            expect.any(String),
+            expect.any(String)
+        );
+
+        expect(Appointment).toHaveBeenCalledWith({
+            patientId: 'user123',
+            doctorId: 'doctor123',
+            appointmentDate: '2024-01-20',
+            appointmentTime: '14:00',
+            symptoms: 'Fever and headache',
+            notes: 'Regular checkup',
+            patientName: 'John Doe',
+            patientContact: '9876543210',
+            status: 'pending',
+            appointmentNumber: '6'
+        });
+        expect(mockAppointment.save).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.json).toHaveBeenCalledWith({
+            success: true,
+            message: 'Appointment booked successfully! Your appointment number is: 6',
+            appointment: expect.objectContaining({
                 appointmentNumber: '6',
-                appointmentDate: '2024-01-20',
-                appointmentTime: '14:00',
-                status: 'pending',
-                save: jest.fn().mockResolvedValue(true)
-            };
-            Appointment.mockImplementation(() => mockAppointment);
-
-            // Mock email template and send
-            appointmentTemplate.mockReturnValue('Email content');
-            sendEmail.mockResolvedValue(true);
-
-            await bookAppointment(req, res);
-
-            expect(User.findOne).toHaveBeenCalledWith({ 
-                _id: 'doctor123', 
-                role: 'doctor' 
-            });
-            expect(Patient.findOne).toHaveBeenCalledWith({ 
-                patientId: 'PAT-E75B964F' 
-            });
-            expect(Appointment).toHaveBeenCalledWith({
-                patientId: 'user123',
-                doctorId: 'doctor123',
-                appointmentDate: '2024-01-20',
-                appointmentTime: '14:00',
-                symptoms: 'Fever and headache',
-                notes: 'Regular checkup',
-                patientName: 'John Doe',
-                patientContact: '9876543210',
-                status: 'pending',
-                appointmentNumber: '6'
-            });
-            expect(mockAppointment.save).toHaveBeenCalled();
-            expect(res.status).toHaveBeenCalledWith(201);
-            expect(res.json).toHaveBeenCalledWith({
-                success: true,
-                message: 'Appointment booked successfully! Your appointment number is: 6',
-                appointment: expect.objectContaining({
-                    appointmentNumber: '6',
-                    date: '2024-01-20',
-                    time: '14:00',
-                    doctor: 'Dr. Smith',
-                    patient: 'John Doe',
-                    status: 'pending'
-                })
-            });
-        });
-
-        it('should return 401 if user not authenticated', async () => {
-            req.user = null;
-
-            await bookAppointment(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith({
-                success: false,
-                message: 'Authentication required'
-            });
-        });
-
-        it('should return 400 if required fields are missing', async () => {
-            req.body = {};
-
-            await bookAppointment(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({
-                success: false,
-                message: 'Appointment date, time, and symptoms are required'
-            });
-        });
-
-        it('should return 404 if doctor not found', async () => {
-            User.findOne.mockResolvedValue(null);
-
-            await bookAppointment(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({
-                success: false,
-                message: 'Doctor not found'
-            });
-        });
-
-        it('should return 404 if patient profile not found', async () => {
-            User.findOne.mockResolvedValue({ _id: 'doctor123', role: 'doctor' });
-            Patient.findOne.mockResolvedValue(null);
-
-            await bookAppointment(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({
-                success: false,
-                message: 'Patient profile not found. Please complete your patient registration first.'
-            });
-        });
-
-        it('should return 400 if patient contact not available', async () => {
-            User.findOne.mockResolvedValue({ _id: 'doctor123', role: 'doctor' });
-            Patient.findOne.mockResolvedValue({ 
-                patientId: 'PAT-E75B964F', 
-                name: 'John Doe',
-                contact: null 
-            });
-
-            await bookAppointment(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({
-                success: false,
-                message: 'Please add your contact number to your patient profile before booking appointments.'
-            });
-        });
-
-        it('should return 400 if time slot already booked', async () => {
-            User.findOne.mockResolvedValue({ _id: 'doctor123', role: 'doctor' });
-            Patient.findOne.mockResolvedValue({ 
-                patientId: 'PAT-E75B964F', 
-                name: 'John Doe',
-                contact: '9876543210' 
-            });
-            Appointment.findOne.mockResolvedValue({ _id: 'existingAppointment' }); // Existing appointment found
-
-            await bookAppointment(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({
-                success: false,
-                message: 'Time slot already booked'
-            });
-        });
-
-        it('should handle CastError for invalid ID format', async () => {
-            const castError = new Error('Cast to ObjectId failed');
-            castError.name = 'CastError';
-
-            User.findOne.mockRejectedValue(castError);
-
-            await bookAppointment(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({
-                success: false,
-                message: 'Invalid ID format'
-            });
-        });
-
-        it('should handle email sending failure gracefully', async () => {
-            const mockDoctor = {
-                _id: 'doctor123',
-                name: 'Dr. Smith',
-                contactNumber: '1234567890'
-            };
-
-            const mockPatient = {
-                patientId: 'PAT-E75B964F',
-                name: 'John Doe',
-                contact: '9876543210'
-            };
-
-            User.findOne.mockResolvedValue(mockDoctor);
-            Patient.findOne.mockResolvedValue(mockPatient);
-            Appointment.findOne.mockResolvedValueOnce(null);
-            Appointment.findOne.mockReturnValueOnce({
-                sort: jest.fn().mockReturnValue({
-                    select: jest.fn().mockResolvedValue(null) // No last appointment
-                })
-            });
-            User.findById.mockResolvedValue({ email: 'john@example.com' });
-            
-            const mockAppointment = {
-                _id: 'appointment123',
-                appointmentNumber: '1',
-                save: jest.fn().mockResolvedValue(true)
-            };
-            Appointment.mockImplementation(() => mockAppointment);
-
-            appointmentTemplate.mockReturnValue('Email content');
-            sendEmail.mockRejectedValue(new Error('Email failed'));
-
-            await bookAppointment(req, res);
-
-            // Should still succeed even if email fails
-            expect(res.status).toHaveBeenCalledWith(201);
-            expect(res.json).toHaveBeenCalledWith({
-                success: true,
-                message: 'Appointment booked successfully! Your appointment number is: 1',
-                appointment: expect.any(Object)
-            });
+                date: '2024-01-20',
+                time: '14:00',
+                doctor: 'Dr. Smith',
+                patient: 'John Doe',
+                status: 'pending'
+            })
         });
     });
+
+    it('should return 401 if user not authenticated', async () => {
+        req.user = null;
+
+        await bookAppointment(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(401);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Authentication required'
+        });
+    });
+
+    it('should return 400 if required fields are missing', async () => {
+        req.body = {};
+
+        await bookAppointment(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Appointment date, time, and symptoms are required'
+        });
+    });
+
+    it('should return 404 if doctor not found', async () => {
+        User.findOne.mockResolvedValue(null);
+
+        await bookAppointment(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Doctor not found'
+        });
+    });
+
+    it('should return 404 if patient profile not found', async () => {
+        User.findOne.mockResolvedValue({ _id: 'doctor123', role: 'doctor' });
+        Patient.findOne.mockResolvedValue(null);
+
+        await bookAppointment(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Patient profile not found. Please complete your patient registration first.'
+        });
+    });
+
+    it('should return 400 if patient contact not available', async () => {
+        User.findOne.mockResolvedValue({ _id: 'doctor123', role: 'doctor' });
+        Patient.findOne.mockResolvedValue({
+            patientId: 'PAT-E75B964F',
+            name: 'John Doe',
+            contact: null
+        });
+
+        await bookAppointment(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message:
+                'Please add your contact number to your patient profile before booking appointments.'
+        });
+    });
+
+    it('should return 400 if time slot already booked', async () => {
+        User.findOne.mockResolvedValue({ _id: 'doctor123', role: 'doctor' });
+        Patient.findOne.mockResolvedValue({
+            patientId: 'PAT-E75B964F',
+            name: 'John Doe',
+            contact: '9876543210'
+        });
+        Appointment.findOne.mockResolvedValue({ _id: 'existingAppointment' }); // Existing appointment found
+
+        await bookAppointment(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Time slot already booked'
+        });
+    });
+
+    it('should handle CastError for invalid ID format', async () => {
+        const castError = new Error('Cast to ObjectId failed');
+        castError.name = 'CastError';
+
+        User.findOne.mockRejectedValue(castError);
+
+        await bookAppointment(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            success: false,
+            message: 'Invalid ID format'
+        });
+    });
+
+    it('should handle email sending failure gracefully', async () => {
+        const mockDoctor = {
+            _id: 'doctor123',
+            name: 'Dr. Smith',
+            contactNumber: '1234567890'
+        };
+
+        const mockPatient = {
+            patientId: 'PAT-E75B964F',
+            name: 'John Doe',
+            contact: '9876543210'
+        };
+
+        User.findOne.mockResolvedValue(mockDoctor);
+        Patient.findOne.mockResolvedValue(mockPatient);
+        Appointment.findOne.mockResolvedValueOnce(null);
+        Appointment.findOne.mockReturnValueOnce({
+            sort: jest.fn().mockReturnValue({
+                select: jest.fn().mockResolvedValue(null)
+            })
+        });
+        User.findById.mockResolvedValue({ email: 'john@example.com' });
+
+        const mockAppointment = {
+            _id: 'appointment123',
+            appointmentNumber: '1',
+            save: jest.fn().mockResolvedValue(true)
+        };
+        Appointment.mockImplementation(() => mockAppointment);
+
+        appointmentTemplate.mockReturnValue('Email content');
+        sendEmail.mockRejectedValue(new Error('Email failed'));
+
+        await bookAppointment(req, res);
+
+        expect(User.findById).toHaveBeenCalledWith('user123');
+        expect(sendEmail).toHaveBeenCalledWith(
+            'john@example.com',
+            expect.any(String),
+            expect.any(String)
+        );
+
+        // Should still succeed even if email fails
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.json).toHaveBeenCalledWith({
+            success: true,
+            message: 'Appointment booked successfully! Your appointment number is: 1',
+            appointment: expect.any(Object)
+        });
+    });
+});
+
 
     // ✅ updateAppointmentStatus Tests (Doctor)
     describe('updateAppointmentStatus', () => {
