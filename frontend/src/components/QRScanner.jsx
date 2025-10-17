@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { Link } from "react-router-dom"; // ✅ ADD THIS
 
+const { REACT_APP_API_URL } = process.env
+
 function QRScanner() {
   const [scannedData, setScannedData] = useState("");
   const [isScanning, setIsScanning] = useState(false);
@@ -13,7 +15,7 @@ function QRScanner() {
   const fetchPatientByQR = async (qrCode) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/patients/lookup/${qrCode}`
+        `${REACT_APP_API_URL}/api/patients/lookup/${qrCode}`
       );
       if (response.ok) {
         const data = await response.json();

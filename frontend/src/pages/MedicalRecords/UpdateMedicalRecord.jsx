@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
+const { REACT_APP_API_URL } = process.env
+
 function UpdateMedicalRecord() {
   const navigate = useNavigate();
   const { recordId } = useParams(); // Get recordId from URL params
@@ -27,7 +29,7 @@ function UpdateMedicalRecord() {
 
   const fetchRecord = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/medical-records/${id}`);
+      const response = await axios.get(`${REACT_APP_API_URL}/api/medical-records/${id}`);
       const record = response.data;
       setFormData({
         patientId: record.patientId._id || record.patientId,
@@ -60,7 +62,7 @@ function UpdateMedicalRecord() {
 
   const fetchPatientDetails = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/patients/${id}`);
+      const response = await axios.get(`${REACT_APP_API_URL}/api/patients/${id}`);
       setSelectedPatient(response.data);
       setBackPath(`/medical-records/${id}`);
     } catch (error) {
@@ -74,7 +76,7 @@ function UpdateMedicalRecord() {
     setMessage('');
 
     try {
-      const response = await axios.put(`http://localhost:5000/api/medical-records/${recordId}`, formData);
+      const response = await axios.put(`${REACT_APP_API_URL}/api/medical-records/${recordId}`, formData);
 
       if (response.status === 200) {
         setMessage('Medical record updated successfully!');

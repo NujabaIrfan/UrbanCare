@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
+const { REACT_APP_API_URL } = process.env
+
 function AddMedicalRecord() {
   const navigate = useNavigate();
   const { patientId } = useParams(); // Get patientId from URL params
@@ -29,7 +31,7 @@ function AddMedicalRecord() {
 
   const fetchPatients = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/patients');
+      const response = await axios.get(`${REACT_APP_API_URL}/api/patients`);
       setPatients(response.data);
     } catch (error) {
       console.error('Error fetching patients:', error);
@@ -38,7 +40,7 @@ function AddMedicalRecord() {
 
   const fetchPatientDetails = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/patients/${id}`);
+      const response = await axios.get(`${REACT_APP_API_URL}/api/patients/${id}`);
       setSelectedPatient(response.data);
     } catch (error) {
       console.error('Error fetching patient details:', error);
@@ -63,7 +65,7 @@ function AddMedicalRecord() {
     setMessage('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/medical-records', formData);
+      const response = await axios.post(`${REACT_APP_API_URL}/api/medical-records`, formData);
 
       if (response.status === 201) {
         setMessage('Medical record added successfully!');

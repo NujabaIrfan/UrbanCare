@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const { REACT_APP_API_URL } = process.env
+
 const MyAppointments = () => {
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ const MyAppointments = () => {
             setLoading(true);
             const token = localStorage.getItem('token');
             const response = await axios.get(
-                'http://localhost:5000/api/channel/my-appointments',
+                `${REACT_APP_API_URL}/api/channel/my-appointments`,
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }
@@ -41,7 +43,7 @@ const MyAppointments = () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.put(
-                `http://localhost:5000/api/channel/appointments/${appointmentId}`,
+                `${REACT_APP_API_URL}/api/channel/appointments/${appointmentId}`,
                 updateData,
                 {
                     headers: { 
@@ -60,7 +62,7 @@ const MyAppointments = () => {
     try {
         const token = localStorage.getItem('token');
         const response = await axios.delete(
-            `http://localhost:5000/api/channel/appointments/${appointmentId}`, // Remove /cancel
+            `${REACT_APP_API_URL}/api/channel/appointments/${appointmentId}`, // Remove /cancel
             {
                 headers: { 
                     Authorization: `Bearer ${token}`,

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
+const { REACT_APP_API_URL } = process.env
+
 const BookAppointment = () => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [doctors, setDoctors] = useState([]);
@@ -91,7 +93,7 @@ const BookAppointment = () => {
     try {
       console.log("Sending:", { doctorId: selectedDoctor.id, date, time, mode });
 
-      const response = await axios.post('http://localhost:5000/api/appointment/book', {
+      const response = await axios.post(`${REACT_APP_API_URL}/api/appointment/book`, {
         doctorId: selectedDoctor.id,
         date,
         time,

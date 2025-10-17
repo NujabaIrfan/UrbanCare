@@ -7,6 +7,8 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 // Replace with your Stripe publishable key
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
+const { REACT_APP_API_URL } = process.env
+
 // Stripe Card Payment Component
 const StripeCardForm = ({ billDetails, onSuccess, onError }) => {
   const stripe = useStripe();
@@ -39,7 +41,7 @@ const StripeCardForm = ({ billDetails, onSuccess, onError }) => {
     setProcessing(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/payments/create-payment-intent', {
+      const response = await fetch(`${REACT_APP_API_URL}/api/payments/create-payment-intent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -68,7 +70,7 @@ const StripeCardForm = ({ billDetails, onSuccess, onError }) => {
         onError(error.message);
         setProcessing(false);
       } else if (paymentIntent.status === 'succeeded') {
-        const confirmResponse = await fetch('http://localhost:5000/api/payments/confirm-payment', {
+        const confirmResponse = await fetch(`${REACT_APP_API_URL}/api/payments/confirm-payment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -180,7 +182,7 @@ const PaymentPage = () => {
       
       if (billId) {
         try {
-          const response = await fetch(`http://localhost:5000/api/receipts/${billId}`);
+          const response = await fetch(`${REACT_APP_API_URL}/api/receipts/${billId}`);
           if (response.ok) {
             const receiptData = await response.json();
             setBillDetails({
@@ -250,7 +252,7 @@ const PaymentPage = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/insurance/insurance-claim', {
+      const response = await fetch(`${REACT_APP_API_URL}/api/insurance/insurance-claim`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(claimData)
@@ -292,7 +294,7 @@ const PaymentPage = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/government/government-funding', {
+      const response = await fetch(`${REACT_APP_API_URL}/api/government/government-funding`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(fundingData)

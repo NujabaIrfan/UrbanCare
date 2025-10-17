@@ -5,6 +5,8 @@ import Card from "../components/Card"
 import { CalendarDays, Newspaper, Stethoscope } from "lucide-react"
 import { Link } from "react-router-dom"
 
+const { REACT_APP_API_URL } = process.env
+
 export default function ResultsPage() {
 
   const { user } = useContext(AuthContext)
@@ -12,7 +14,7 @@ export default function ResultsPage() {
 
   useState(() => {
     (async () => {
-      const response = await axios.get("http://localhost:5000/api/reports?email=" + encodeURIComponent(user.email))
+      const response = await axios.get(`${REACT_APP_API_URL}/api/reports?email=` + encodeURIComponent(user.email))
       const result = response.data
       if (response.status == 200) setReports(result)
     })()

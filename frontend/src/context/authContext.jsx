@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode"; 
 export const AuthContext = createContext();
 
+const { REACT_APP_API_URL } = process.env
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     return JSON.parse(localStorage.getItem("user")) || null;
@@ -26,7 +28,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password, address, contactNumber) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", { 
+      const response = await axios.post(`${REACT_APP_API_URL}/api/auth/login`, { 
         email, password, address, contactNumber 
       });
 

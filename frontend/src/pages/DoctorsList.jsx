@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const { REACT_APP_API_URL } = process.env
+
 const DoctorsList = () => {
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,7 +16,7 @@ const DoctorsList = () => {
 
     const fetchDoctors = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/doctors');
+            const response = await axios.get(`${REACT_APP_API_URL}/api/doctors`);
             setDoctors(response.data.doctors);
             setLoading(false);
         } catch (error) {

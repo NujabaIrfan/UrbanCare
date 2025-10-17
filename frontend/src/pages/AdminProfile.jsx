@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { FaUserEdit, FaKey, FaTrash, FaUserShield, FaHospital, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import 'react-toastify/dist/ReactToastify.css';
 
+const { REACT_APP_API_URL } = process.env
+
 function AdminProfile() {
     const { user, setUser } = useContext(AuthContext);
     const [profile, setProfile] = useState({
@@ -33,7 +35,7 @@ function AdminProfile() {
       try {
           const token = localStorage.getItem("token");
           const { data } = await axios.put(
-              "http://localhost:5000/api/profile/update",
+              `${REACT_APP_API_URL}/api/profile/update`,
               profile, 
               { headers: { Authorization: `Bearer ${token}` } }
           );
@@ -56,7 +58,7 @@ function AdminProfile() {
         try {
             const token = localStorage.getItem("token");
             await axios.put(
-                "http://localhost:5000/api/profile/change-password",
+                `${REACT_APP_API_URL}/api/profile/change-password`,
                 { oldPassword, newPassword },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -74,7 +76,7 @@ function AdminProfile() {
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
-            await axios.delete("http://localhost:5000/api/profile/delete", {
+            await axios.delete(`${REACT_APP_API_URL}/api/profile/delete`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

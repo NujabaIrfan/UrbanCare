@@ -3,6 +3,8 @@ import axios from 'axios';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const { REACT_APP_API_URL } = process.env
+
 const DoctorDetails = () => {
     const [doctors, setDoctors] = useState([]);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
@@ -26,7 +28,7 @@ const DoctorDetails = () => {
 
     const fetchDoctors = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/doctors');
+            const response = await axios.get(`${REACT_APP_API_URL}/api/doctors`);
             setDoctors(response.data.doctors);
             setLoading(false);
         } catch (error) {
@@ -38,7 +40,7 @@ const DoctorDetails = () => {
     const fetchDoctorDetails = async (doctorId) => {
         setDetailsLoading(true);
         try {
-            const response = await axios.get(`http://localhost:5000/api/doctors/${doctorId}`);
+            const response = await axios.get(`${REACT_APP_API_URL}/api/doctors/${doctorId}`);
             setSelectedDoctor(response.data.doctor);
             setDetailsLoading(false);
         } catch (error) {
@@ -86,7 +88,7 @@ const DoctorDetails = () => {
     try {
         const token = localStorage.getItem('token');
         const response = await axios.post(
-            `http://localhost:5000/api/doctors/${selectedDoctor._id}/appointments`,
+            `${REACT_APP_API_URL}/api/doctors/${selectedDoctor._id}/appointments`,
             {
                 appointmentDate: bookingData.appointmentDate,
                 appointmentTime: bookingData.appointmentTime,

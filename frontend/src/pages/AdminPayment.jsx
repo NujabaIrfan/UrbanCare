@@ -23,6 +23,8 @@ import {
   CreditCard as PaymentIcon
 } from "lucide-react";
 
+const { REACT_APP_API_URL } = process.env
+
 function AdminPayment() {
   const [showModal, setShowModal] = useState(false);
   const [receipts, setReceipts] = useState([]);
@@ -44,11 +46,11 @@ function AdminPayment() {
   const fetchAllData = async () => {
     try {
       const [receiptsRes, transactionsRes, claimsRes, fundingRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/receipts"),
+        axios.get(`${REACT_APP_API_URL}/api/receipts`),
         // UPDATED ENDPOINTS
-        axios.get("http://localhost:5000/api/admin/transactions"),
-        axios.get("http://localhost:5000/api/admin/insurance-claims"),
-        axios.get("http://localhost:5000/api/admin/government-funding")
+        axios.get(`${REACT_APP_API_URL}/api/admin/transactions`),
+        axios.get(`${REACT_APP_API_URL}/api/admin/insurance-claims`),
+        axios.get(`${REACT_APP_API_URL}/api/admin/government-funding`)
       ]);
       
       setReceipts(receiptsRes.data);
@@ -63,7 +65,7 @@ function AdminPayment() {
   // 🟢 Add a new receipt
   const handleAddReceipt = async (newReceipt) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/receipts", newReceipt);
+      const res = await axios.post(`${REACT_APP_API_URL}/api/receipts`, newReceipt);
       setReceipts([...receipts, res.data]);
       setShowModal(false);
       fetchAllData(); // Refresh all data
@@ -81,7 +83,7 @@ function AdminPayment() {
     }
 
     try {
-      const res = await axios.put(`http://localhost:5000/api/receipts/${editingReceipt._id}`, updatedReceipt);
+      const res = await axios.put(`${REACT_APP_API_URL}/api/receipts/${editingReceipt._id}`, updatedReceipt);
       setReceipts(receipts.map((r) => (r._id === editingReceipt._id ? res.data : r)));
       setShowModal(false);
       setEditingReceipt(null);
@@ -103,7 +105,7 @@ function AdminPayment() {
 
     if (window.confirm("Are you sure you want to delete this receipt?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/receipts/${id}`);
+        await axios.delete(`${REACT_APP_API_URL}/api/receipts/${id}`);
         setReceipts(receipts.filter((r) => r._id !== id));
         fetchAllData(); // Refresh all data
       } catch (err) {
@@ -116,7 +118,7 @@ function AdminPayment() {
   // Update payment status
   const updatePaymentStatus = async (receiptId, status) => {
     try {
-      await axios.put(`http://localhost:5000/api/receipts/${receiptId}`, { status });
+      await axios.put(`${REACT_APP_API_URL}/api/receipts/${receiptId}`, { status });
       fetchAllData(); // Refresh all data
       setShowPaymentModal(false);
       setSelectedReceiptForPayment(null);
@@ -131,8 +133,8 @@ function AdminPayment() {
     try {
       // UPDATED ENDPOINTS
       const endpoint = type === 'insurance' 
-        ? `http://localhost:5000/api/insurance/insurance-claims/${claimId}`
-        : `http://localhost:5000/api/government/government-funding/${claimId}`;
+        ? `${REACT_APP_API_URL}/api/insurance/insurance-claims/${claimId}`
+        : `${REACT_APP_API_URL}/api/government/government-funding/${claimId}`;
       
       await axios.put(endpoint, { status });
       fetchAllData(); // Refresh all data

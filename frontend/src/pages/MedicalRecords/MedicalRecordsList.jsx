@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 
+const { REACT_APP_API_URL } = process.env
+
 function MedicalRecordsList() {
   const { patientId } = useParams();
   const [records, setRecords] = useState([]);
@@ -22,12 +24,12 @@ function MedicalRecordsList() {
       setLoading(true);
       // Fetch patient details
       const patientResponse = await axios.get(
-        `http://localhost:5000/api/patients/${patientId}`
+        `${REACT_APP_API_URL}/api/patients/${patientId}`
       );
       setPatient(patientResponse.data);
       // Fetch medical records for this patient
       const recordsResponse = await axios.get(
-        `http://localhost:5000/api/medical-records/patients/${patientId}`
+        `${REACT_APP_API_URL}/api/medical-records/patients/${patientId}`
       );
       setRecords(recordsResponse.data);
       setLoading(false);
@@ -41,7 +43,7 @@ function MedicalRecordsList() {
     try {
       setLoading(true);
       const response = await axios.get(
-        "http://localhost:5000/api/medical-records"
+        `${REACT_APP_API_URL}/api/medical-records`
       );
       setRecords(response.data);
       setLoading(false);
@@ -58,7 +60,7 @@ function MedicalRecordsList() {
     if (confirmDelete) {
       try {
         await axios.delete(
-          `http://localhost:5000/api/medical-records/${recordId}`
+          `${REACT_APP_API_URL}/api/medical-records/${recordId}`
         );
         setRecords(records.filter((record) => record._id !== recordId));
       } catch (err) {
