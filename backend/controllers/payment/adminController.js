@@ -2,6 +2,7 @@ import InsuranceClaim from "../../models/Insurance.js";
 import GovernmentFunding from "../../models/GovermentFunding.js";
 import PaymentTransaction from "../../models/paymentTransaction.js";
 import Receipt from "../../models/Receipt.js";
+import { StatusCodes } from "http-status-codes"
 
 export const adminController = {
   // 📊 Dashboard Statistics
@@ -60,10 +61,10 @@ export const adminController = {
         revenue: revenueStats[0] || { totalRevenue: 0, paidRevenue: 0, pendingRevenue: 0 }
       };
 
-      res.status(200).json(stats);
+      res.status(StatusCodes.OK).json(stats);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -71,10 +72,10 @@ export const adminController = {
   getAllInsuranceClaims: async (req, res) => {
     try {
       const claims = await InsuranceClaim.find().sort({ createdAt: -1 });
-      res.status(200).json(claims);
+      res.status(StatusCodes.OK).json(claims);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -82,10 +83,10 @@ export const adminController = {
   getAllGovernmentFunding: async (req, res) => {
     try {
       const funding = await GovernmentFunding.find().sort({ createdAt: -1 });
-      res.status(200).json(funding);
+      res.status(StatusCodes.OK).json(funding);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -93,10 +94,10 @@ export const adminController = {
   getAllTransactions: async (req, res) => {
     try {
       const transactions = await PaymentTransaction.find().sort({ createdAt: -1 });
-      res.status(200).json(transactions);
+      res.status(StatusCodes.OK).json(transactions);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   }
 };

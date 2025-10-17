@@ -1,6 +1,7 @@
 import QRCode from "qrcode";
 import { v4 as uuidv4 } from "uuid";
 import PatientModel from "../models/PatientModel.js";
+import { StatusCodes } from "http-status-codes"
 
 // ➕ Add new patient
 export const addPatient = async (req, res) => {
@@ -25,9 +26,9 @@ export const addPatient = async (req, res) => {
     });
     
     await patient.save();
-    res.status(201).json(patient);
+    res.status(StatusCodes.CREATED).json(patient);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
 
@@ -37,7 +38,7 @@ export const getAllPatients = async (req, res) => {
     const patients = await PatientModel.find().sort({ createdAt: -1 });
     res.json(patients);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
 
@@ -49,12 +50,12 @@ export const getPatientByQRCode = async (req, res) => {
     });
     
     if (!patient) {
-      return res.status(404).json({ error: "Patient not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ error: "Patient not found" });
     }
     
     res.json(patient);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
 
@@ -64,12 +65,12 @@ export const getPatientById = async (req, res) => {
     const patient = await PatientModel.findById(req.params.id);
     
     if (!patient) {
-      return res.status(404).json({ error: "Patient not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ error: "Patient not found" });
     }
     
     res.json(patient);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
 
@@ -79,11 +80,11 @@ export const deletePatient = async (req, res) => {
     const patient = await PatientModel.findByIdAndDelete(req.params.id);
     
     if (!patient) {
-      return res.status(404).json({ error: "Patient not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ error: "Patient not found" });
     }
     
     res.json({ message: "Patient deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };

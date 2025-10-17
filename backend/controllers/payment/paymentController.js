@@ -2,6 +2,8 @@ import Stripe from "stripe";
 import Receipt from "../../models/Receipt.js";
 import PaymentTransaction from "../../models/paymentTransaction.js";
 import dotenv from 'dotenv';
+import { StatusCodes } from "http-status-codes"
+
 dotenv.config();
 
 
@@ -23,7 +25,7 @@ export const paymentController = {
   // 💳 Create PaymentIntent
   createPaymentIntent: async (req, res) => {
     if (!stripe) {
-      return res.status(500).json({ 
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
         message: "Payment service unavailable - Stripe not configured", 
         error: "Stripe secret key missing" 
       });
@@ -55,7 +57,7 @@ export const paymentController = {
       });
     } catch (error) {
       console.error('Stripe payment intent error:', error);
-      res.status(500).json({ 
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
         message: "Payment intent creation failed", 
         error: error.message 
       });
@@ -65,7 +67,7 @@ export const paymentController = {
   // 💳 Confirm Payment
   confirmPayment: async (req, res) => {
     if (!stripe) {
-      return res.status(500).json({ 
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
         message: "Payment service unavailable - Stripe not configured", 
         error: "Stripe secret key missing" 
       });
@@ -84,14 +86,14 @@ export const paymentController = {
         );
         res.json({ success: true, message: "Payment confirmed" });
       } else {
-        res.status(400).json({ 
+        res.status(StatusCodes.BAD_REQUEST).json({ 
           success: false, 
           message: "Payment not completed" 
         });
       }
     } catch (error) {
       console.error('Stripe payment confirmation error:', error);
-      res.status(500).json({ 
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
         message: "Payment confirmation failed", 
         error: error.message 
       });
@@ -102,11 +104,11 @@ export const paymentController = {
   getTransactionById: async (req, res) => {
     try {
       const transaction = await PaymentTransaction.findById(req.params.id);
-      if (!transaction) return res.status(404).json({ message: "Transaction not found" });
-      res.status(200).json(transaction);
+      if (!transaction) return res.status(StatusCodes.NOT_FOUND).json({ message: "Transaction not found" });
+      res.status(StatusCodes.OK).json(transaction);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -114,11 +116,11 @@ export const paymentController = {
   getTransactionByBillId: async (req, res) => {
     try {
       const transaction = await PaymentTransaction.findOne({ billId: req.params.billId });
-      if (!transaction) return res.status(404).json({ message: "Transaction not found" });
-      res.status(200).json(transaction);
+      if (!transaction) return res.status(StatusCodes.NOT_FOUND).json({ message: "Transaction not found" });
+      res.status(StatusCodes.OK).json(transaction);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -131,11 +133,11 @@ export const paymentController = {
         { status, notes, updatedAt: new Date() },
         { new: true }
       );
-      if (!updatedTransaction) return res.status(404).json({ message: "Transaction not found" });
-      res.status(200).json(updatedTransaction);
+      if (!updatedTransaction) return res.status(StatusCodes.NOT_FOUND).json({ message: "Transaction not found" });
+      res.status(StatusCodes.OK).json(updatedTransaction);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -143,14 +145,14 @@ export const paymentController = {
   deleteTransaction: async (req, res) => {
     try {
       const deletedTransaction = await PaymentTransaction.findByIdAndDelete(req.params.id);
-      if (!deletedTransaction) return res.status(404).json({ message: "Transaction not found" });
-      res.status(200).json({ 
+      if (!deletedTransaction) return res.status(StatusCodes.NOT_FOUND).json({ message: "Transaction not found" });
+      res.status(StatusCodes.OK).json({ 
         message: "Transaction deleted successfully", 
         deletedTransaction 
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   }
 };

@@ -1,5 +1,6 @@
 import InsuranceClaim from "../../models/Insurance.js";
 import Receipt from "../../models/Receipt.js";
+import { StatusCodes } from "http-status-codes"
 
 export const insuranceController = {
   // 🏥 Create Insurance Claim
@@ -20,7 +21,7 @@ export const insuranceController = {
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ 
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
         message: "Insurance claim failed", 
         error: error.message 
       });
@@ -31,11 +32,11 @@ export const insuranceController = {
   getClaimById: async (req, res) => {
     try {
       const claim = await InsuranceClaim.findById(req.params.id);
-      if (!claim) return res.status(404).json({ message: "Insurance claim not found" });
-      res.status(200).json(claim);
+      if (!claim) return res.status(StatusCodes.NOT_FOUND).json({ message: "Insurance claim not found" });
+      res.status(StatusCodes.OK).json(claim);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -49,7 +50,7 @@ export const insuranceController = {
         { new: true, runValidators: true }
       );
       
-      if (!updatedClaim) return res.status(404).json({ message: "Insurance claim not found" });
+      if (!updatedClaim) return res.status(StatusCodes.NOT_FOUND).json({ message: "Insurance claim not found" });
       
       // Update receipt status based on claim status
       if (status === "approved") {
@@ -58,10 +59,10 @@ export const insuranceController = {
         await Receipt.findByIdAndUpdate(updatedClaim.billId, { status: "Pending" });
       }
       
-      res.status(200).json(updatedClaim);
+      res.status(StatusCodes.OK).json(updatedClaim);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   },
 
@@ -69,18 +70,18 @@ export const insuranceController = {
   deleteClaim: async (req, res) => {
     try {
       const deletedClaim = await InsuranceClaim.findByIdAndDelete(req.params.id);
-      if (!deletedClaim) return res.status(404).json({ message: "Insurance claim not found" });
+      if (!deletedClaim) return res.status(StatusCodes.NOT_FOUND).json({ message: "Insurance claim not found" });
       
       // Reset receipt status
       await Receipt.findByIdAndUpdate(deletedClaim.billId, { status: "Pending" });
       
-      res.status(200).json({ 
+      res.status(StatusCodes.OK).json({ 
         message: "Insurance claim deleted successfully", 
         deletedClaim 
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
   }
 };
