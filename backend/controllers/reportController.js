@@ -11,7 +11,7 @@ export const getReport = async (req, res, next) => {
         if (!report) return res.status(404).json({ message: "Not found" })
         const patient = await PatientModel.findOne({ email: report.patient }).exec()
         const doctor = await User.findOne({ email: report.doctor }).exec()
-        if (!patient || !doctor) return res.status(404).json({ message: "Not found" })
+        if (!doctor) return res.status(404).json({ message: "Not found" })
         return res.status(200).json({ ...report.toObject(), doctor, patient })
     } catch (error) {
         console.error(error)
