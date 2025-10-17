@@ -1,58 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
 function AddMedicalRecord() {
   const navigate = useNavigate();
-  const { patientId } = useParams(); // Get patientId from URL params
+  const { patientId } = useParams();
   const [patients, setPatients] = useState([]);
-  const [selectedPatient, setSelectedPatient] = useState(null); // For displaying patient details
+  const [selectedPatient, setSelectedPatient] = useState(null);
   const [formData, setFormData] = useState({
-    patientId: patientId || '', // Pre-populate if provided
-    appointmentDate: '',
-    department: '',
-    doctor: '',
-    diagnoses: '',
-    comments: ''
+    patientId: patientId || "",
+    appointmentDate: "",
+    department: "",
+    doctor: "",
+    diagnoses: "",
+    comments: "",
   });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     fetchPatients();
     if (patientId) {
-      // Auto-fetch and set selected patient if patientId provided
       fetchPatientDetails(patientId);
-      setFormData(prev => ({ ...prev, patientId })); // Ensure it's set
+      setFormData((prev) => ({ ...prev, patientId }));
     }
   }, [patientId]);
 
   const fetchPatients = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/patients');
+      const response = await axios.get("http://localhost:5000/api/patients");
       setPatients(response.data);
     } catch (error) {
-      console.error('Error fetching patients:', error);
+      console.error("Error fetching patients:", error);
     }
   };
 
   const fetchPatientDetails = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/patients/${id}`);
+      const response = await axios.get(
+        `http://localhost:5000/api/patients/${id}`
+      );
       setSelectedPatient(response.data);
     } catch (error) {
-      console.error('Error fetching patient details:', error);
-      setMessage('Error: Patient not found.');
+      console.error("Error fetching patient details:", error);
+      setMessage("Error: Patient not found.");
     }
   };
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
-    // If patient changes via dropdown, fetch details
-    if (e.target.name === 'patientId' && e.target.value) {
+    if (e.target.name === "patientId" && e.target.value) {
       fetchPatientDetails(e.target.value);
     }
   };
@@ -60,30 +60,35 @@ function AddMedicalRecord() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
+    setMessage("");
 
     try {
-      const response = await axios.post('http://localhost:5000/api/medical-records', formData);
+      const response = await axios.post(
+        "http://localhost:5000/api/medical-records",
+        formData
+      );
 
       if (response.status === 201) {
-        setMessage('Medical record added successfully!');
+        setMessage("Medical record added successfully!");
         setFormData({
-          patientId: patientId || '',
-          appointmentDate: '',
-          department: '',
-          doctor: '',
-          diagnoses: '',
-          comments: ''
+          patientId: patientId || "",
+          appointmentDate: "",
+          department: "",
+          doctor: "",
+          diagnoses: "",
+          comments: "",
         });
-        
-        // Redirect to patient's records if patientId provided, else all records
-        const redirectPath = patientId ? `/medical-records/${patientId}` : '/medical-records';
+
+        //redirect to patient if id provided, fetch all if not
+        const redirectPath = patientId
+          ? `/medical-records/${patientId}`
+          : "/medical-records";
         setTimeout(() => {
           navigate(redirectPath);
         }, 2000);
       }
     } catch (error) {
-      setMessage('Error: ' + error.response?.data?.message || error.message);
+      setMessage("Error: " + error.response?.data?.message || error.message);
     } finally {
       setLoading(false);
     }
@@ -93,29 +98,39 @@ function AddMedicalRecord() {
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-3xl mx-auto">
         <div className="mb-6">
-          <Link to={patientId ? `/medical-records/${patientId}` : '/medical-records'}>
+          <Link
+            to={
+              patientId ? `/medical-records/${patientId}` : "/medical-records"
+            }
+          >
             <button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-              ← Back to {patientId ? 'Patient Records' : 'Medical Records'}
+              ← Back to {patientId ? "Patient Records" : "Medical Records"}
             </button>
           </Link>
         </div>
 
         <h1 className="text-3xl font-bold mb-6 text-center">
-          {patientId ? `Add Medical Record for ${selectedPatient?.name || 'Patient'}` : 'Add Medical Record'}
+          {patientId
+            ? `Add Medical Record for ${selectedPatient?.name || "Patient"}`
+            : "Add Medical Record"}
         </h1>
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Patient Selection - Conditional based on patientId */}
+            {/* patient selection */}
             {patientId ? (
-              // Read-only display for pre-selected patient
+              // read only
               <div className="bg-gray-50 p-3 rounded-md">
-                <label className="block text-sm font-medium mb-1">Patient</label>
-                <p className="text-lg font-semibold">{selectedPatient?.name} - {selectedPatient?.patientId} (Age: {selectedPatient?.age})</p>
+                <label className="block text-sm font-medium mb-1">
+                  Patient
+                </label>
+                <p className="text-lg font-semibold">
+                  {selectedPatient?.name} - {selectedPatient?.patientId} (Age:{" "}
+                  {selectedPatient?.age})
+                </p>
                 <input type="hidden" name="patientId" value={patientId} />
               </div>
             ) : (
-              // Dropdown for selecting patient
               <div>
                 <label className="block text-sm font-medium mb-1">
                   Patient <span className="text-red-500">*</span>
@@ -136,7 +151,8 @@ function AddMedicalRecord() {
                 </select>
                 {selectedPatient && (
                   <p className="text-sm text-gray-600 mt-1">
-                    Selected: {selectedPatient.name} - {selectedPatient.patientId} (Age: {selectedPatient.age})
+                    Selected: {selectedPatient.name} -{" "}
+                    {selectedPatient.patientId} (Age: {selectedPatient.age})
                   </p>
                 )}
               </div>
@@ -153,6 +169,7 @@ function AddMedicalRecord() {
                 value={formData.appointmentDate}
                 onChange={handleChange}
                 required
+                max={new Date().toISOString().split("T")[0]}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -217,9 +234,7 @@ function AddMedicalRecord() {
 
             {/* Comments */}
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Comments
-              </label>
+              <label className="block text-sm font-medium mb-1">Comments</label>
               <textarea
                 name="comments"
                 value={formData.comments}
@@ -236,7 +251,7 @@ function AddMedicalRecord() {
               disabled={loading}
               className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 disabled:bg-gray-400"
             >
-              {loading ? 'Adding...' : 'Add Medical Record'}
+              {loading ? "Adding..." : "Add Medical Record"}
             </button>
           </form>
 
@@ -244,9 +259,9 @@ function AddMedicalRecord() {
           {message && (
             <div
               className={`mt-4 p-3 rounded ${
-                message.includes('success')
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-red-100 text-red-700'
+                message.includes("success")
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
               }`}
             >
               {message}

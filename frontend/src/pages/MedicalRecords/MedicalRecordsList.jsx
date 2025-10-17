@@ -20,12 +20,10 @@ function MedicalRecordsList() {
   const fetchPatientRecords = async () => {
     try {
       setLoading(true);
-      // Fetch patient details
       const patientResponse = await axios.get(
         `http://localhost:5000/api/patients/${patientId}`
       );
       setPatient(patientResponse.data);
-      // Fetch medical records for this patient
       const recordsResponse = await axios.get(
         `http://localhost:5000/api/medical-records/patients/${patientId}`
       );
@@ -88,7 +86,7 @@ function MedicalRecordsList() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-6xl mx-auto">
-        {/* Back Button */}
+        {/* Back */}
         <div className="mb-6">
           <Link to="/display-patients">
             <button className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-200 font-medium">
@@ -97,7 +95,7 @@ function MedicalRecordsList() {
           </Link>
         </div>
 
-        {/* Header Section */}
+        {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">Medical Records</h1>
           
@@ -119,7 +117,7 @@ function MedicalRecordsList() {
           </Link>
         </div>
 
-        {/* Medical Records Table */}
+        {/* medical records */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {records.length === 0 ? (
             <div className="p-8 text-center">

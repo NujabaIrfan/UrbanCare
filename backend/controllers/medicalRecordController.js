@@ -1,12 +1,12 @@
 import MedicalRecordModel from '../models/MedicalRecordModel.js';
 import PatientModel from '../models/PatientModel.js';
 
-// Get all medical records
+// get all medical records
 const getAllMedicalRecords = async (req, res) => {
   try {
     const records = await MedicalRecordModel.find()
       .populate('patientId', 'name patientId age gender')
-      .sort({ appointmentDate: -1 }); // Most recent first
+      .sort({ appointmentDate: -1 }); //descending date order
     
     res.status(200).json(records);
   } catch (error) {
@@ -18,7 +18,7 @@ const getPatientMedicalRecords = async(req, res)=>{
     try{
         const{ patientId } = req.params;
         const records = await MedicalRecordModel.find({patientId})
-        .populate('patientId', 'name patientId age gender')  // Added: Populate for patient details
+        .populate('patientId', 'name patientId age gender')  
         .sort({appointmentDate: -1});
         res.status(200).json(records);
     } catch (error){
