@@ -1,24 +1,28 @@
 import MedicalRecordModel from '../models/MedicalRecordModel.js';
 import PatientModel from '../models/PatientModel.js';
 
+// service class-medical record handlling
 class MedicalRecordService {
   constructor(MedicalRecordModel, PatientModel) {
     this.MedicalRecordModel = MedicalRecordModel;
     this.PatientModel = PatientModel;
   }
 
+  //get all the medical records
   async getAll() {
     return await this.MedicalRecordModel.find()
       .populate('patientId', 'name patientId age gender')
-      .sort({ appointmentDate: -1 }); // Most recent first
+      .sort({ appointmentDate: -1 }); // most recent first
   }
 
+  //get all the records for a specific patient
   async getByPatient(patientId) {
     return await this.MedicalRecordModel.find({ patientId })
       .populate('patientId', 'name patientId age gender')
       .sort({ appointmentDate: -1 });
   }
 
+  //get a specific medical record
   async getById(id) {
     const record = await this.MedicalRecordModel.findById(id)
       .populate('patientId', 'name age gender contact');
@@ -30,10 +34,11 @@ class MedicalRecordService {
     return record;
   }
 
+  //create a new med record
   async create(data) {
     const { patientId, appointmentDate, department, doctor, diagnoses, comments } = data;
 
-    // Check if patient exists
+    // checking if patient exists
     const patient = await this.PatientModel.findById(patientId);
     if (!patient) {
       throw new Error('Patient not found');
@@ -51,11 +56,12 @@ class MedicalRecordService {
     return await newRecord.save();
   }
 
+  //edit a med record
   async update(id, updates) {
     const updatedRecord = await this.MedicalRecordModel.findByIdAndUpdate(
       id,
       updates,
-      { new: true, runValidators: true }
+      { new: true, runValidators: true } // returns the updated doc + validate
     );
 
     if (!updatedRecord) {
@@ -65,6 +71,7 @@ class MedicalRecordService {
     return updatedRecord;
   }
 
+  //delete a med record
   async delete(id) {
     const deletedRecord = await this.MedicalRecordModel.findByIdAndDelete(id);
 
@@ -76,18 +83,20 @@ class MedicalRecordService {
   }
 }
 
+//medical service instance
 const service = new MedicalRecordService(MedicalRecordModel, PatientModel);
 
-// Get all medical records
+// get all medical records
 const getAllMedicalRecords = async (req, res) => {
   try {
-    const records = await service.getAll();
+    const records = await service.getAll(); //function call for getAll
     res.status(200).json(records);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+//get patient --> medical record
 const getPatientMedicalRecords = async (req, res) => {
   try {
     const { patientId } = req.params;
@@ -98,7 +107,7 @@ const getPatientMedicalRecords = async (req, res) => {
   }
 };
 
-// Get record by id
+// get med record by id
 const getMedicalRecordById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -112,7 +121,7 @@ const getMedicalRecordById = async (req, res) => {
   }
 };
 
-// Create new medical record
+// create new medical record
 const createMedicalRecord = async (req, res) => {
   try {
     const newRecord = await service.create(req.body);
@@ -125,7 +134,7 @@ const createMedicalRecord = async (req, res) => {
   }
 };
 
-// Update a medical record
+// update a medical record
 const updateMedicalRecord = async (req, res) => {
   try {
     const { id } = req.params;
@@ -139,7 +148,7 @@ const updateMedicalRecord = async (req, res) => {
   }
 };
 
-// Delete medical record
+// delete medical record
 const deleteMedicalRecord = async (req, res) => {
   try {
     const { id } = req.params;

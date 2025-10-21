@@ -1,9 +1,9 @@
-// Mock uuid with inline factory function (fixes ES6 module issue)
+// mocked uui with a simple factory to avoid es6 import issues in jest
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'abcd1234-5678-90ef-ghij-klmnopqrstuv')
 }));
 
-// Mock other dependencies
+// mock qr library + patient model
 jest.mock('qrcode');
 jest.mock('../models/PatientModel.js');
 
@@ -11,7 +11,7 @@ import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
 import PatientModel from '../models/PatientModel.js';
 
-// NOW import the controller after mocks are set up
+// importing controller after mocks
 import {
   addPatient,
   getAllPatients,
@@ -23,7 +23,7 @@ import {
 describe('Patient Controller Tests', () => {
   let req, res;
 
-  // Sample test data
+  // sample test data 
   const mockPatientData = {
     name: 'John Doe',
     age: 35,
@@ -46,7 +46,7 @@ describe('Patient Controller Tests', () => {
     createdAt: new Date('2025-01-15')
   };
 
-  // Reset mocks before each test
+  // reset mocks before each test - avoid state leaks
   beforeEach(() => {
     req = { body: {}, params: {} };
     res = {
@@ -56,12 +56,10 @@ describe('Patient Controller Tests', () => {
     jest.clearAllMocks();
   });
 
-  // ========================================
-  // ADD PATIENT TESTS
-  // ========================================
+  //test - adding a patient
   describe('addPatient', () => {
     it('should create a new patient successfully', async () => {
-      // Arrange
+      // arrange - normal 
       req.body = mockPatientData;
       
       QRCode.toDataURL.mockResolvedValue('data:image/png;base64,mockQRCode');
@@ -72,32 +70,32 @@ describe('Patient Controller Tests', () => {
         ...mockPatient
       }));
 
-      // Act
+      // act - call the handler
       await addPatient(req, res);
 
-      // Assert
-      expect(uuidv4).toHaveBeenCalled();
-      expect(QRCode.toDataURL).toHaveBeenCalledWith('PAT-ABCD1234');
+      // assert
+      expect(uuidv4).toHaveBeenCalled(); //check uuid call
+      expect(QRCode.toDataURL).toHaveBeenCalledWith('PAT-ABCD1234'); //check qr generation
       expect(saveMock).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(201);
     });
 
     it('should handle QR code generation errors', async () => {
-      // Arrange
+      // arrange - qr failure
       req.body = mockPatientData;
       
       QRCode.toDataURL.mockRejectedValue(new Error('QR generation failed'));
 
-      // Act
+      // act
       await addPatient(req, res);
 
-      // Assert
+      // assert - bad request 400
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({ error: 'QR generation failed' });
     });
 
     it('should handle database save errors', async () => {
-      // Arrange
+      // arrange - qr okay, server failure
       req.body = mockPatientData;
       
       QRCode.toDataURL.mockResolvedValue('data:image/png;base64,mockQRCode');
@@ -107,17 +105,17 @@ describe('Patient Controller Tests', () => {
         save: saveMock
       }));
 
-      // Act
+      // act
       await addPatient(req, res);
 
-      // Assert
+      // assert
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({ error: 'Database error' });
     });
 
     it('should handle validation errors for missing required fields', async () => {
-      // Arrange
-      req.body = { name: 'John Doe' }; // Missing other required fields
+      // arrange - incomplete body
+      req.body = { name: 'John Doe' }; // missing other required fields
       
       QRCode.toDataURL.mockResolvedValue('data:image/png;base64,mockQRCode');
       
@@ -126,218 +124,210 @@ describe('Patient Controller Tests', () => {
         save: saveMock
       }));
 
-      // Act
+      // act
       await addPatient(req, res);
 
-      // Assert
+      // assert
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({ error: 'Validation failed' });
     });
   });
 
-  // ========================================
-  // GET ALL PATIENTS TESTS
-  // ========================================
+  //test - get all patients
   describe('getAllPatients', () => {
     it('should return all patients successfully', async () => {
-      // Arrange
+      // arrange - normal
       const mockChain = {
         sort: jest.fn().mockResolvedValue([mockPatient])
       };
       PatientModel.find = jest.fn().mockReturnValue(mockChain);
 
-      // Act
+      // act
       await getAllPatients(req, res);
 
-      // Assert
+      // assert
       expect(PatientModel.find).toHaveBeenCalledWith();
       expect(mockChain.sort).toHaveBeenCalledWith({ createdAt: -1 });
       expect(res.json).toHaveBeenCalledWith([mockPatient]);
     });
 
     it('should return empty array when no patients exist', async () => {
-      // Arrange
+      // arrange - no patients, empty result
       const mockChain = {
         sort: jest.fn().mockResolvedValue([])
       };
       PatientModel.find = jest.fn().mockReturnValue(mockChain);
 
-      // Act
+      // act
       await getAllPatients(req, res);
 
-      // Assert
+      // assert
       expect(res.json).toHaveBeenCalledWith([]);
     });
 
     it('should handle database errors', async () => {
-      // Arrange
+      // arrange - db error- query rejection
       const mockChain = {
         sort: jest.fn().mockRejectedValue(new Error('Database error'))
       };
       PatientModel.find = jest.fn().mockReturnValue(mockChain);
 
-      // Act
+      // act
       await getAllPatients(req, res);
 
-      // Assert
+      // assert
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Database error' });
     });
   });
 
-  // ========================================
-  // GET PATIENT BY QR CODE TESTS
-  // ========================================
+  //get patient by scanned qr code
   describe('getPatientByQRCode', () => {
     it('should return patient by QR code successfully', async () => {
-      // Arrange
+      // arrange - normal
       req.params.qrCode = 'PAT-ABCD1234';
       PatientModel.findOne = jest.fn().mockResolvedValue(mockPatient);
 
-      // Act
+      // act
       await getPatientByQRCode(req, res);
 
-      // Assert
+      // assert
       expect(PatientModel.findOne).toHaveBeenCalledWith({ patientId: 'PAT-ABCD1234' });
       expect(res.json).toHaveBeenCalledWith(mockPatient);
     });
 
     it('should return 404 when patient not found', async () => {
-      // Arrange
+      // arrange - patient not found - returns 404
       req.params.qrCode = 'PAT-INVALID';
       PatientModel.findOne = jest.fn().mockResolvedValue(null);
 
-      // Act
+      // act
       await getPatientByQRCode(req, res);
 
-      // Assert
+      // assert
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ error: 'Patient not found' });
     });
 
     it('should handle database errors', async () => {
-      // Arrange
+      // arrange - db errors
       req.params.qrCode = 'PAT-ABCD1234';
       PatientModel.findOne = jest.fn().mockRejectedValue(new Error('Database error'));
 
-      // Act
+      // act
       await getPatientByQRCode(req, res);
 
-      // Assert
+      // assert
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Database error' });
     });
   });
 
-  // ========================================
-  // GET PATIENT BY ID TESTS
-  // ========================================
+  //get patient by id
   describe('getPatientById', () => {
     it('should return patient by ID successfully', async () => {
-      // Arrange
+      // arrange - normal
       req.params.id = mockPatient._id;
       PatientModel.findById = jest.fn().mockResolvedValue(mockPatient);
 
-      // Act
+      // act
       await getPatientById(req, res);
 
-      // Assert
+      // assert
       expect(PatientModel.findById).toHaveBeenCalledWith(mockPatient._id);
       expect(res.json).toHaveBeenCalledWith(mockPatient);
     });
 
     it('should return 404 when patient not found', async () => {
-      // Arrange
+      // arrange - patient not found - return 404
       req.params.id = 'nonexistent-id';
       PatientModel.findById = jest.fn().mockResolvedValue(null);
 
-      // Act
+      // act
       await getPatientById(req, res);
 
-      // Assert
+      // assert
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ error: 'Patient not found' });
     });
 
     it('should handle database errors', async () => {
-      // Arrange
+      // arrange - db errors
       req.params.id = mockPatient._id;
       PatientModel.findById = jest.fn().mockRejectedValue(new Error('Database error'));
 
-      // Act
+      // act
       await getPatientById(req, res);
 
-      // Assert
+      // assert
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Database error' });
     });
 
     it('should handle invalid ObjectId format', async () => {
-      // Arrange
+      // arrange - bad id - throws cast error
       req.params.id = 'invalid-id-format';
       PatientModel.findById = jest.fn().mockRejectedValue(new Error('Cast to ObjectId failed'));
 
-      // Act
+      // act
       await getPatientById(req, res);
 
-      // Assert
+      // assert
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Cast to ObjectId failed' });
     });
   });
 
-  // ========================================
-  // DELETE PATIENT TESTS
-  // ========================================
+  //delete a patient
   describe('deletePatient', () => {
     it('should delete patient successfully', async () => {
-      // Arrange
+      // arrange - normal
       req.params.id = mockPatient._id;
       PatientModel.findByIdAndDelete = jest.fn().mockResolvedValue(mockPatient);
 
-      // Act
+      // act
       await deletePatient(req, res);
 
-      // Assert
+      // assert
       expect(PatientModel.findByIdAndDelete).toHaveBeenCalledWith(mockPatient._id);
       expect(res.json).toHaveBeenCalledWith({ message: 'Patient deleted successfully' });
     });
 
     it('should return 404 when patient not found', async () => {
-      // Arrange
+      // arrange - can't delete - patient not found
       req.params.id = 'nonexistent-id';
       PatientModel.findByIdAndDelete = jest.fn().mockResolvedValue(null);
 
-      // Act
+      // act
       await deletePatient(req, res);
 
-      // Assert
+      // assert
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ error: 'Patient not found' });
     });
 
     it('should handle database errors', async () => {
-      // Arrange
+      // arrange - db error
       req.params.id = mockPatient._id;
       PatientModel.findByIdAndDelete = jest.fn().mockRejectedValue(new Error('Database error'));
 
-      // Act
+      // act
       await deletePatient(req, res);
 
-      // Assert
+      // assert
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Database error' });
     });
 
     it('should handle invalid ObjectId format during delete', async () => {
-      // Arrange
+      // arrange - bad object id - cast error thrown
       req.params.id = 'invalid-id';
       PatientModel.findByIdAndDelete = jest.fn().mockRejectedValue(new Error('Cast to ObjectId failed'));
 
-      // Act
+      // act
       await deletePatient(req, res);
 
-      // Assert
+      // assert
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Cast to ObjectId failed' });
     });
